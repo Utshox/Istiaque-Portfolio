@@ -1,0 +1,15 @@
+{
+  "name": "utshox.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate_pdf.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^24.38.0"
+  }
+}

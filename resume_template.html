@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Istiaque Ahmed - CV</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            /* slate-800 */
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px;
+            background: #ffffff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+            color: #0f172a;
+            /* slate-900 */
+            letter-spacing: -0.5px;
+        }
+
+        .headline {
+            font-size: 18px;
+            font-weight: 500;
+            color: #0ea5e9;
+            /* accent / sky-500 */
+            margin: 0 0 20px 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f172a;
+            border-bottom: 2px solid #e2e8f0;
+            /* slate-200 */
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin: 0 0 15px 0;
+        }
+
+        .summary {
+            font-size: 15px;
+            color: #475569;
+            /* slate-600 */
+        }
+
+        .skills-group {
+            margin-bottom: 10px;
+        }
+
+        .skills-group strong {
+            display: inline-block;
+            width: 170px;
+            color: #334155;
+            /* slate-700 */
+        }
+
+        .skills-group span {
+            color: #475569;
+        }
+
+        .experience-item {
+            margin-bottom: 20px;
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 5px;
+        }
+
+        .job-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #0f172a;
+        }
+
+        .company {
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            /* slate-500 */
+        }
+
+        .job-focus {
+            font-size: 14.5px;
+            color: #475569;
+        }
+
+        .contact-info {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .contact-info a {
+            color: #0ea5e9;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Istiaque Ahmed</h1>
+        <div class="headline">Software Engineer & Data Specialist</div>
+
+        <div class="contact-info">
+            iah.utshox@gmail.com |
+            <a href="https://www.linkedin.com/in/istiaque-ahmed-ish/">LinkedIn</a> |
+            <a href="https://github.com/Utshox">GitHub</a>
+        </div>
+
+        <h2>Summary</h2>
+        <p class="summary">
+            A versatile technical professional combining a Master’s in Artificial Intelligence with over 5 years of
+            proven experience in Full-Stack Web Development and Technical SEO. Expert in building robust web
+            applications, architecting data pipelines (ETL), and automating complex workflows. I bridge the gap between
+            software engineering, data-driven AI, and technical growth.
+        </p>
+
+        <h2>Skills</h2>
+        <div class="skills-group">
+            <strong>Data & AI:</strong>
+            <span>Python, PyTorch, SQL, Pandas, ETL Pipelines, Machine Learning.</span>
+        </div>
+        <div class="skills-group">
+            <strong>Software Engineering:</strong>
+            <span>JavaScript, React, PHP, REST APIs, Git, Node.js.</span>
+        </div>
+        <div class="skills-group">
+            <strong>Technical SEO:</strong>
+            <span>Site Architecture, Log Analysis, Screaming Frog, Automation.</span>
+        </div>
+
+        <h2>Experience</h2>
+        <div class="experience-item">
+            <div class="experience-header">
+                <span class="job-title">AI Researcher (Master's Thesis)</span>
+                <span class="company">Vilnius University</span>
+            </div>
+            <div class="job-focus">
+                <strong>Focus:</strong> Built end-to-end Python data pipelines, handled data extraction/transformation,
+                and optimized deep learning models for resource-constrained environments.
+            </div>
+        </div>
+
+        <div class="experience-item">
+            <div class="experience-header">
+                <span class="job-title">Full-Stack Developer & Technical Consultant</span>
+                <span class="company">Freelance</span>
+            </div>
+            <div class="job-focus">
+                <strong>Focus:</strong> Engineered 70+ web applications, integrated third-party APIs, and led technical
+                SEO audits that drove massive, quantifiable organic growth for B2B clients.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script to automatically trigger print dialog when opened -->
+    <script>
+        // Check if there is a ?print=true parameter to trigger print automatically
+        const urlParams = new URLSearchParams(window.location.search);
+        const shouldPrint = urlParams.get('print');
+        if (shouldPrint === 'true') {
+            window.onload = function () {
+                window.print();
+            }
+        }
+    </script>
+</body>
+
+</html>
