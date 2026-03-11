@@ -151,4 +151,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (slides.length > 0) {
         startSlideShow();
     }
+
+    // 7. Visitor Counter
+    const visitorCounter = document.getElementById('visitor-counter');
+    if (visitorCounter) {
+        fetch('https://api.counterapi.dev/v1/utshox/portfolio/up')
+            .then(response => response.json())
+            .then(data => {
+                // Add 100 to the real count to start from > 100
+                const actualCount = data.count || 0;
+                const totalCount = actualCount + 100;
+                
+                // Format to 6 digits, e.g., "000101"
+                const countStr = String(totalCount).padStart(6, '0');
+                
+                // Generate HTML for each digit
+                let digitsHtml = '';
+                for (let i = 0; i < countStr.length; i++) {
+                    digitsHtml += `<span class="inline-block bg-slate-900 border border-slate-700 text-accent font-mono text-xl md:text-2xl px-2.5 py-1.5 rounded-md shadow-[0_0_10px_rgba(14,165,233,0.2)]">${countStr[i]}</span>`;
+                }
+                visitorCounter.innerHTML = digitsHtml;
+            })
+            .catch(error => {
+                console.error('Error fetching visitor count:', error);
+            });
+    }
 });
