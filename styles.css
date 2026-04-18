@@ -161,8 +161,9 @@ img {
 }
 
 .hero h1 {
-    font-size: clamp(3.6rem, 8vw, 7rem);
-    max-width: 10ch;
+    font-size: clamp(3.2rem, 6.4vw, 6rem);
+    max-width: 12.5ch;
+    text-wrap: balance;
 }
 
 .hero h1 span {
@@ -196,7 +197,7 @@ img {
 
 .hero-summary {
     max-width: 40rem;
-    font-size: 1.05rem;
+    font-size: 1.08rem;
 }
 
 .hero-actions,
