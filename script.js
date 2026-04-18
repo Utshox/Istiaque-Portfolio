@@ -1,179 +1,91 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Setup dynamic year in footer
-    const yearSpan = document.getElementById('year');
-    if (yearSpan) {
-        yearSpan.textContent = new Date().getFullYear();
+document.addEventListener("DOMContentLoaded", () => {
+    const year = document.getElementById("year");
+    if (year) {
+        year.textContent = new Date().getFullYear();
     }
 
-    // 2. Mobile Menu Toggle
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const mobileLinks = document.querySelectorAll('.mobile-link');
+    const menuToggle = document.getElementById("menu-toggle");
+    const siteNav = document.getElementById("site-nav");
 
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-
-    // Close mobile menu when clicking a link
-    mobileLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
+    if (menuToggle && siteNav) {
+        menuToggle.addEventListener("click", () => {
+            const isOpen = siteNav.classList.toggle("is-open");
+            menuToggle.setAttribute("aria-expanded", String(isOpen));
         });
-    });
 
-    // 3. Typing Animation for Sub-Headline
-    const sentences = [
-        "AI & Data Engineer",
-        "Full-Stack Developer",
-        "Technical SEO Specialist"
-    ];
-    let partIndex = 0;
-    let part = 0;
-    let offset = 0;
-    let len = sentences.length;
-    let forwards = true;
-    let skipCount = 0;
-    const skipDelay = 15;
-    const speed = 70;
-
-    // Typing function
-    function typeEffect() {
-        if (forwards) {
-            if (offset >= sentences[part].length) {
-                ++skipCount;
-                if (skipCount == skipDelay) {
-                    forwards = false;
-                    skipCount = 0;
-                }
-            }
-        } else {
-            if (offset == 0) {
-                forwards = true;
-                part++;
-                offset = 0;
-                if (part >= len) {
-                    part = 0;
-                }
-            }
-        }
-
-        let sub = sentences[part].substring(0, offset);
-        if (skipCount == 0) {
-            if (forwards) {
-                offset++;
-            } else {
-                offset--;
-            }
-        }
-
-        const typedTextElement = document.getElementById('typed-text');
-        if (typedTextElement) {
-            typedTextElement.textContent = sub;
-        }
+        siteNav.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", () => {
+                siteNav.classList.remove("is-open");
+                menuToggle.setAttribute("aria-expanded", "false");
+            });
+        });
     }
 
-    setInterval(typeEffect, speed);
-
-    // 4. Scroll Reveal via Intersection Observer
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15
-    };
-
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
+    const revealItems = document.querySelectorAll(".reveal");
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
             if (entry.isIntersecting) {
-                // Add the animation class
-                entry.target.classList.add('is-visible');
-                // Optional: Stop observing once revealed
-                // observer.unobserve(entry.target);
+                entry.target.classList.add("is-visible");
             }
         });
-    }, observerOptions);
+    }, { threshold: 0.16 });
 
-    const fadeElements = document.querySelectorAll('.fade-in-section');
-    fadeElements.forEach(el => observer.observe(el));
+    revealItems.forEach((item) => revealObserver.observe(item));
 
-    // 5. Navbar blur background effect on scroll
-    const header = document.querySelector('header');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('shadow-lg');
-            header.classList.replace('bg-slate-950/80', 'bg-slate-950/95');
-        } else {
-            header.classList.remove('shadow-lg');
-            header.classList.replace('bg-slate-950/95', 'bg-slate-950/80');
-        }
-    });
+    const roles = [
+        "Technical SEO Audits",
+        "Site Architecture",
+        "Content Systems",
+        "Organic Growth Strategy"
+    ];
 
-    // 6. Testimonial Carousel Logic
-    const slides = document.querySelectorAll('.testimonial-slide');
-    const dots = document.querySelectorAll('#testimonial-dots button');
-    let currentSlide = 0;
-    let slideInterval;
+    const rotatingRole = document.getElementById("rotating-role");
+    let roleIndex = 0;
+
+    if (rotatingRole) {
+        setInterval(() => {
+            roleIndex = (roleIndex + 1) % roles.length;
+            rotatingRole.textContent = roles[roleIndex];
+        }, 2400);
+    }
+
+    const slides = Array.from(document.querySelectorAll(".testimonial-slide"));
+    const controls = Array.from(document.querySelectorAll("#testimonial-controls button"));
+    let activeSlide = 0;
+    let slideTimer;
 
     function showSlide(index) {
-        slides.forEach((slide, i) => {
-            slide.classList.remove('active');
-            dots[i].classList.remove('bg-accent', 'w-10');
-            dots[i].classList.add('bg-slate-700', 'w-3');
-            if (i === index) {
-                slide.classList.add('active');
-                dots[i].classList.add('bg-accent', 'w-10');
-                dots[i].classList.remove('bg-slate-700', 'w-3');
-            }
+        slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle("is-active", slideIndex === index);
         });
-        currentSlide = index;
-    }
 
-    function nextSlide() {
-        const next = (currentSlide + 1) % slides.length;
-        showSlide(next);
-    }
-
-    function startSlideShow() {
-        slideInterval = setInterval(nextSlide, 7000); // Change slide every 7 seconds
-    }
-
-    function stopSlideShow() {
-        clearInterval(slideInterval);
-    }
-
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            stopSlideShow();
-            showSlide(index);
-            startSlideShow();
+        controls.forEach((button, buttonIndex) => {
+            button.classList.toggle("is-active", buttonIndex === index);
         });
-    });
 
-    if (slides.length > 0) {
-        startSlideShow();
+        activeSlide = index;
     }
 
-    // 7. Visitor Counter
-    const visitorCounter = document.getElementById('visitor-counter');
-    if (visitorCounter) {
-        fetch('https://api.counterapi.dev/v1/utshox/portfolio/up')
-            .then(response => response.json())
-            .then(data => {
-                // Add 100 to the real count to start from > 100
-                const actualCount = data.count || 0;
-                const totalCount = actualCount + 100;
-                
-                // Format to 6 digits, e.g., "000101"
-                const countStr = String(totalCount).padStart(6, '0');
-                
-                // Generate HTML for each digit
-                let digitsHtml = '';
-                for (let i = 0; i < countStr.length; i++) {
-                    digitsHtml += `<span class="inline-block bg-slate-900 border border-slate-700 text-accent font-mono text-xl md:text-2xl px-2.5 py-1.5 rounded-md shadow-[0_0_10px_rgba(14,165,233,0.2)]">${countStr[i]}</span>`;
-                }
-                visitorCounter.innerHTML = digitsHtml;
-            })
-            .catch(error => {
-                console.error('Error fetching visitor count:', error);
+    function startTestimonials() {
+        if (!slides.length || !controls.length) {
+            return;
+        }
+
+        slideTimer = setInterval(() => {
+            showSlide((activeSlide + 1) % slides.length);
+        }, 6000);
+    }
+
+    if (slides.length === controls.length && slides.length > 0) {
+        controls.forEach((button, index) => {
+            button.addEventListener("click", () => {
+                clearInterval(slideTimer);
+                showSlide(index);
+                startTestimonials();
             });
+        });
+
+        showSlide(0);
+        startTestimonials();
     }
 });

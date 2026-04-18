@@ -1,769 +1,336 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Istiaque Ahmed - Portfolio</title>
+    <title>Istiaque Ahmed | Technical SEO Specialist</title>
+    <meta name="description"
+        content="Technical SEO specialist focused on site architecture, content systems, crawl health, and revenue-minded organic growth.">
 
+<<<<<<< HEAD
     <!-- Social Preview Meta Tags (OpenGraph) -->
     <meta property="og:title" content="Istiaque Ahmed - Full-Stack, AI Engineer & Content Writer">
+=======
+    <meta property="og:title" content="Istiaque Ahmed | Technical SEO Specialist">
+>>>>>>> dea4073 (Refocus portfolio on technical SEO and redesign site)
     <meta property="og:description"
-        content="I bridge the gap between complex engineering, data-driven AI, and organic growth. View my portfolio.">
-    <!-- Note to User: For the image below to work, upload an image of your site and name it 'social-preview.png', placing it in the 'images' folder -->
+        content="Technical SEO specialist focused on crawlability, performance, information architecture, and measurable growth.">
     <meta property="og:image" content="https://istiaque.cv/images/social-preview.png">
     <meta property="og:url" content="https://istiaque.cv/">
     <meta property="og:type" content="website">
 
-    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
+<<<<<<< HEAD
     <meta name="twitter:title" content="Istiaque Ahmed - Full-Stack, AI Engineer & Content Writer>
+=======
+    <meta name="twitter:title" content="Istiaque Ahmed | Technical SEO Specialist">
+>>>>>>> dea4073 (Refocus portfolio on technical SEO and redesign site)
     <meta name="twitter:description"
-        content="I bridge the gap between complex engineering, data-driven AI, and organic growth. View my portfolio.">
+        content="Technical SEO specialist focused on crawlability, performance, information architecture, and measurable growth.">
     <meta name="twitter:image" content="https://istiaque.cv/images/social-preview.png">
 
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap"
         rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS (CDN for standalone file) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        slate: {
-                            850: '#141E30',
-                            900: '#0F172A',
-                            950: '#020617',
-                        },
-                        accent: {
-                            DEFAULT: '#0EA5E9', // Electric Blue / Sky
-                            hover: '#0284C7',
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="./styles.css">
 </head>
 
-<body class="bg-slate-950 text-slate-300 font-sans antialiased selection:bg-accent selection:text-white">
-
-    <!-- Navbar -->
-    <header
-        class="fixed top-0 left-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
-            <a href="#"
-                class="text-2xl font-bold text-white tracking-tight hover:text-accent transition-colors duration-300">
-                Istiaque Ahmed<span class="text-accent">.</span>
-            </a>
-
-            <!-- Desktop Nav -->
-            <nav class="hidden md:flex space-x-8">
-                <a href="#about" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">About</a>
-                <a href="#expertise"
-                    class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Expertise</a>
-                <a href="#experience"
-                    class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Experience</a>
-                <a href="#projects"
-                    class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Projects</a>
-                <a href="#contact"
-                    class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Contact</a>
-            </nav>
-
-            <!-- Mobile Nav Toggle -->
-            <button id="mobile-menu-btn" class="md:hidden text-slate-300 hover:text-white focus:outline-none">
-                <i class="fa-solid fa-bars text-2xl"></i>
-            </button>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu"
-            class="hidden md:hidden bg-slate-900 border-b border-slate-800 absolute w-full left-0 top-20 shadow-xl">
-            <nav class="flex flex-col px-6 py-4 space-y-4">
-                <a href="#about"
-                    class="text-base font-medium text-slate-300 hover:text-white transition-colors mobile-link">About</a>
-                <a href="#expertise"
-                    class="text-base font-medium text-slate-300 hover:text-white transition-colors mobile-link">Expertise</a>
-                <a href="#experience"
-                    class="text-base font-medium text-slate-300 hover:text-white transition-colors mobile-link">Experience</a>
-                <a href="#projects"
-                    class="text-base font-medium text-slate-300 hover:text-white transition-colors mobile-link">Projects</a>
-                <a href="#contact"
-                    class="text-base font-medium text-slate-300 hover:text-white transition-colors mobile-link">Contact</a>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section id="hero"
-        class="relative min-h-screen flex items-center justify-center pt-20 px-6 lg:px-12 max-w-7xl mx-auto overflow-hidden">
-        <!-- Background elements -->
-        <div
-            class="absolute top-1/4 -right-1/4 w-96 h-96 bg-accent opacity-20 rounded-full blur-[120px] pointer-events-none">
-        </div>
-        <div
-            class="absolute bottom-1/4 -left-1/4 w-96 h-96 bg-purple-600 opacity-10 rounded-full blur-[120px] pointer-events-none">
-        </div>
-
-        <div
-            class="relative z-10 w-full animate-fade-in-up flex flex-col md:flex-row items-center justify-between gap-12 mt-10 md:mt-0">
-            <div class="flex-1 text-center md:text-left">
-                <h1 class="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-tight mb-4">
-                    Building the Future with <br class="hidden md:block" />
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-purple-500">Code &
-                        Data.</span>
-                </h1>
-
-                <div
-                    class="text-2xl md:text-3xl font-semibold text-slate-200 mb-6 h-10 flex items-center justify-center md:justify-start">
-                    <span class="mr-2">I am a</span>
-                    <span id="typed-text" class="text-accent border-r-2 border-accent pr-1 animate-pulse"></span>
-                </div>
-
-                <p class="text-lg md:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed mx-auto md:mx-0">
-                    I bridge the gap between complex engineering, data-driven AI, and organic growth.
-                </p>
-
-                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-12">
-                    <a href="#projects"
-                        class="px-8 py-3.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-lg shadow-accent/30 inline-flex items-center group">
-                        View My Work
-                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-                    </a>
-                    <a href="./Istiaque_Ahmed_Resume.pdf" target="_blank"
-                        class="px-8 py-3.5 bg-transparent border border-slate-700 hover:border-slate-500 text-white font-medium rounded-lg transition-all duration-300 hover:bg-slate-800">
-                        Download CV
-                    </a>
-                </div>
-
-                <div class="flex space-x-6 text-slate-400 justify-center md:justify-start">
-                    <a href="https://www.linkedin.com/in/istiaque-ahmed-ish/" target="_blank"
-                        class="text-2xl hover:text-accent transition-colors duration-300 hover:scale-110 transform"
-                        aria-label="LinkedIn">
-                        <i class="fa-brands fa-linkedin"></i>
-                    </a>
-                    <a href="https://github.com/Utshox" target="_blank"
-                        class="text-2xl hover:text-white transition-colors duration-300 hover:scale-110 transform"
-                        aria-label="GitHub">
-                        <i class="fa-brands fa-github"></i>
-                    </a>
-                    <a href="https://www.upwork.com/freelancers/~018048fec315a2a872" target="_blank"
-                        class="text-2xl hover:text-[#14A800] transition-colors duration-300 hover:scale-110 transform"
-                        aria-label="Upwork">
-                        <img src="./images/upwork icon.png" alt="Upwork" class="w-6 h-6 inline-block object-contain">
-                    </a>
-                </div>
-            </div>
-
-            <!-- Photo section -->
-            <div class="w-64 h-64 md:w-96 md:h-96 shrink-0 relative mt-8 md:mt-0">
-                <div class="absolute inset-0 rounded-full border-2 border-slate-800/60 translate-x-4 translate-y-4">
-                </div>
-                <div
-                    class="relative w-full h-full rounded-full overflow-hidden border-4 border-slate-900 shadow-2xl z-10 flex items-center justify-center bg-slate-900">
-                    <img src="./images/IstiaqueAhmed.jpg" alt="Istiaque Ahmed"
-                        class="w-full h-full object-cover object-center scale-105 hover:scale-110 transition-transform duration-700">
-                </div>
-                <div class="absolute inset-0 bg-accent/20 rounded-full blur-2xl -z-10 animate-pulse"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="py-24 px-6 lg:px-12 bg-slate-900 border-y border-slate-800/50">
-        <div class="max-w-4xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
-            <h2 class="text-sm font-bold tracking-widest text-accent uppercase mb-3 flex items-center">
-                <span class="w-8 h-0.5 bg-accent mr-4"></span> The Story
-            </h2>
-            <h3 class="text-4xl md:text-5xl font-bold text-white mb-8">My Evolution</h3>
-
-            <div class="space-y-6 text-lg text-slate-300 leading-relaxed font-light">
-                <p>
-                    My career didn't follow a traditional path—and that is my biggest advantage. I started as a
-                    Full-Stack Web Developer, building over 70+ websites from the ground up. This hands-on engineering
-                    experience naturally evolved into Technical SEO, where I used my coding knowledge to fix complex
-                    architecture issues and drive massive organic growth.
-                </p>
-                <p>
-                    Today, as a recent Master's graduate in Informatics with a focus on Artificial Intelligence, I
-                    combine my engineering discipline with cutting-edge machine learning and data pipelines. I don't
-                    just write code; I understand the full lifecycle of how systems are built, how data flows through
-                    them, and how users find them.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Expertise Section -->
-    <section id="expertise" class="py-24 px-6 lg:px-12 max-w-7xl mx-auto relative">
-        <div class="fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out mb-16">
-            <h2 class="text-sm font-bold tracking-widest text-accent uppercase mb-3 flex items-center">
-                <span class="w-8 h-0.5 bg-accent mr-4"></span> The Trifecta
-            </h2>
-            <h3 class="text-4xl md:text-5xl font-bold text-white">My Expertise</h3>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Card 1 -->
-            <div
-                class="fade-in-section delay-100 opacity-0 translate-y-8 transition-all duration-700 ease-out bg-slate-900 border border-slate-800 rounded-2xl p-8 hover:bg-slate-800/80 hover:border-accent/30 hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(14,165,233,0.1)] transition-all duration-300 group">
-                <div
-                    class="w-14 h-14 bg-slate-950 rounded-xl flex items-center justify-center text-accent text-3xl mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-brain"></i>
-                </div>
-                <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Data & AI</h4>
-                <p class="text-slate-400 mb-8 leading-relaxed">
-                    Architecting end-to-end ETL pipelines, data cleaning, and developing machine learning models.
-                </p>
-                <div class="flex flex-wrap gap-2">
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">Python</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">PyTorch</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">SQL</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">Pandas</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">ETL</span>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div
-                class="fade-in-section delay-200 opacity-0 translate-y-8 transition-all duration-700 ease-out bg-slate-900 border border-slate-800 rounded-2xl p-8 hover:bg-slate-800/80 hover:border-accent/30 hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(14,165,233,0.1)] transition-all duration-300 group">
-                <div
-                    class="w-14 h-14 bg-slate-950 rounded-xl flex items-center justify-center text-accent text-3xl mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-code"></i>
-                </div>
-                <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Full-Stack Dev
-                </h4>
-                <p class="text-slate-400 mb-8 leading-relaxed">
-                    Building scalable, high-performance web applications and robust RESTful APIs.
-                </p>
-                <div class="flex flex-wrap gap-2 mt-auto">
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">JavaScript</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">React</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">Next.js</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">Node.js</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">PHP</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">C++</span>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div
-                class="fade-in-section delay-300 opacity-0 translate-y-8 transition-all duration-700 ease-out bg-slate-900 border border-slate-800 rounded-2xl p-8 hover:bg-slate-800/80 hover:border-accent/30 hover:-translate-y-2 hover:shadow-[0_8px_30px_rgb(14,165,233,0.1)] transition-all duration-300 group">
-                <div
-                    class="w-14 h-14 bg-slate-950 rounded-xl flex items-center justify-center text-accent text-3xl mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-                <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Technical
-                    Growth</h4>
-                <p class="text-slate-400 mb-8 leading-relaxed">
-                    Conducting deep technical audits, log analysis, and automating SEO workflows with Python.
-                </p>
-                <div class="flex flex-wrap gap-2 mt-auto">
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">Screaming
-                        Frog</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">Ahrefs</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">GA4</span>
-                    <span
-                        class="px-3 py-1 bg-slate-950/50 text-slate-300 text-xs font-semibold rounded border border-slate-700/50">Automation</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Experience Section -->
-    <section id="experience" class="py-24 px-6 lg:px-12 bg-slate-900 border-y border-slate-800/50">
-        <div class="max-w-4xl mx-auto">
-            <div class="fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out mb-16">
-                <h2 class="text-sm font-bold tracking-widest text-accent uppercase mb-3 flex items-center">
-                    <span class="w-8 h-0.5 bg-accent mr-4"></span> Social Proof
-                </h2>
-                <h3 class="text-4xl md:text-5xl font-bold text-white">Experience</h3>
-            </div>
-
-            <div class="relative border-l-2 border-slate-800 pl-8 space-y-12">
-                <!-- Timeline Item 1 -->
-                <div class="fade-in-section opacity-0 -translate-x-8 transition-all duration-700 ease-out relative">
-                    <div class="absolute -left-[41px] top-1.5 w-5 h-5 bg-slate-900 border-4 border-accent rounded-full">
-                    </div>
-                    <div
-                        class="bg-slate-950 border border-slate-800 p-8 rounded-2xl shadow-sm hover:border-slate-700 transition-colors">
-                        <h4 class="text-2xl font-bold text-white mb-1">AI Researcher</h4>
-                        <p class="text-accent font-medium mb-4">Master's Thesis</p>
-                        <p class="text-slate-400 leading-relaxed text-lg font-light">
-                            Built an end-to-end ETL pipeline and deep learning model in Python for medical image
-                            segmentation, reducing memory bottlenecks by 30%.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Timeline Item 2 -->
-                <div class="fade-in-section opacity-0 -translate-x-8 transition-all duration-700 ease-out relative">
-                    <div class="absolute -left-[41px] top-1.5 w-5 h-5 bg-slate-900 border-4 border-accent rounded-full">
-                    </div>
-                    <div
-                        class="bg-slate-950 border border-slate-800 p-8 rounded-2xl shadow-sm hover:border-slate-700 transition-colors">
-                        <h4 class="text-2xl font-bold text-white mb-1">Top-Rated Plus Freelance Consultant</h4>
-                        <p class="text-[#14A800] font-medium mb-4">Upwork <span
-                                class="text-slate-500 font-normal ml-2">| $40k+ Earnings</span></p>
-                        <p class="text-slate-400 leading-relaxed text-lg font-light">
-                            Maintained a 100% Job Success Score on Upwork across 70+ projects. Delivered custom
-                            development and technical SEO strategies, driving up to 150% organic traffic growth for B2B
-                            clients.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Testimonials Section -->
-    <section id="testimonials"
-        class="py-24 px-6 lg:px-12 bg-slate-950 border-y border-slate-800/50 relative overflow-hidden">
-        <!-- Background elements -->
-        <div class="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-[100px] pointer-events-none"></div>
-
-        <div class="max-w-4xl mx-auto">
-            <div class="fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out mb-16 text-center">
-                <h2
-                    class="text-sm font-bold tracking-widest text-accent uppercase mb-3 flex items-center justify-center">
-                    <span class="w-8 h-0.5 bg-accent mr-4"></span> Client Love <span
-                        class="w-8 h-0.5 bg-accent ml-4"></span>
-                </h2>
-                <h3 class="text-4xl md:text-5xl font-bold text-white">Upwork Feedback</h3>
-            </div>
-
-            <div class="relative bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 shadow-2xl fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out"
-                id="testimonial-container">
-
-                <!-- Quote Icon -->
-                <div class="absolute -top-6 -left-2 text-6xl text-accent/20">
-                    <i class="fa-solid fa-quote-left"></i>
-                </div>
-
-                <!-- Slides Container -->
-                <div id="testimonial-slider" class="relative">
-
-                    <!-- Slide 1 -->
-                    <div class="testimonial-slide active">
-                        <div class="flex items-center mb-6">
-                            <div class="flex text-[#14A800] space-x-1 text-sm">
-                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i>
-                            </div>
-                            <span class="ml-3 text-slate-500 text-sm font-medium">5.0 / 5.0</span>
-                        </div>
-                        <p class="text-xl md:text-2xl text-slate-300 font-light italic leading-relaxed mb-8">
-                            "Your Search Is Over...Hire This Designer!! Istiaque did a fantastic job. We threw a lot of
-                            curve balls... but he handled it all with professionalism and grace. He is talented and
-                            demonstrates experience by the quality and speed in which he works. Look no farther,
-                            Istiaque is your guy!"
-                        </p>
-                        <div class="flex items-center justify-between border-t border-slate-800 pt-6">
-                            <div>
-                                <h4 class="text-white font-bold text-lg">Web Design Project</h4>
-                                <p class="text-slate-500 text-sm">Upwork Client</p>
-                            </div>
-                            <div class="text-slate-500 text-2xl opacity-50"><img src="./images/upwork icon.png"
-                                    alt="Upwork" class="w-8 h-8 inline-block object-contain opacity-70"></div>
-                        </div>
-                    </div>
-
-                    <!-- Slide 2 -->
-                    <div class="testimonial-slide">
-                        <div class="flex items-center mb-6">
-                            <div class="flex text-[#14A800] space-x-1 text-sm">
-                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i>
-                            </div>
-                            <span class="ml-3 text-slate-500 text-sm font-medium">5.0 / 5.0</span>
-                        </div>
-                        <p class="text-xl md:text-2xl text-slate-300 font-light italic leading-relaxed mb-8">
-                            "This guy is incredible! Very knowledgeable and super attentive to detail. He takes the time
-                            to understand every aspect thoroughly and ensures nothing is overlooked... You can trust
-                            that he will deliver exceptional results because he truly cares about the quality of his
-                            work."
-                        </p>
-                        <div class="flex items-center justify-between border-t border-slate-800 pt-6">
-                            <div>
-                                <h4 class="text-white font-bold text-lg">Klaviyo Integration</h4>
-                                <p class="text-slate-500 text-sm">Upwork Client</p>
-                            </div>
-                            <div class="text-slate-500 text-2xl opacity-50"><img src="./images/upwork icon.png"
-                                    alt="Upwork" class="w-8 h-8 inline-block object-contain opacity-70"></div>
-                        </div>
-                    </div>
-
-                    <!-- Slide 3 -->
-                    <div class="testimonial-slide">
-                        <div class="flex items-center mb-6">
-                            <div class="flex text-[#14A800] space-x-1 text-sm">
-                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i>
-                            </div>
-                            <span class="ml-3 text-slate-500 text-sm font-medium">5.0 / 5.0</span>
-                        </div>
-                        <p class="text-xl md:text-2xl text-slate-300 font-light italic leading-relaxed mb-8">
-                            "Istiaque is conscientious, diligent and pays close attention to detail. He not only
-                            provides the service, but has given knowledgeable consultation that has improved design and
-                            exceeded our expectations... You will be happy you picked this freelancer!"
-                        </p>
-                        <div class="flex items-center justify-between border-t border-slate-800 pt-6">
-                            <div>
-                                <h4 class="text-white font-bold text-lg">Website Makeover</h4>
-                                <p class="text-slate-500 text-sm">Upwork Client</p>
-                            </div>
-                            <div class="text-slate-500 text-2xl opacity-50"><img src="./images/upwork icon.png"
-                                    alt="Upwork" class="w-8 h-8 inline-block object-contain opacity-70"></div>
-                        </div>
-                    </div>
-
-                    <!-- Slide 4 -->
-                    <div class="testimonial-slide">
-                        <div class="flex items-center mb-6">
-                            <div class="flex text-[#14A800] space-x-1 text-sm">
-                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i>
-                            </div>
-                            <span class="ml-3 text-slate-500 text-sm font-medium">5.0 / 5.0</span>
-                        </div>
-                        <p class="text-xl md:text-2xl text-slate-300 font-light italic leading-relaxed mb-8">
-                            "Istiaque is very outgoing and always provides valuable feedback. He is very good with
-                            design and can solve problems with ease. He was able to boost our organic and direct
-                            traffic... When it comes to web development and SEO improvements, Istiaque can help with
-                            anyone's website."
-                        </p>
-                        <div class="flex items-center justify-between border-t border-slate-800 pt-6">
-                            <div>
-                                <h4 class="text-white font-bold text-lg">SEO & Speed Optimization</h4>
-                                <p class="text-slate-500 text-sm">Upwork Client</p>
-                            </div>
-                            <div class="text-slate-500 text-2xl opacity-50"><img src="./images/upwork icon.png"
-                                    alt="Upwork" class="w-8 h-8 inline-block object-contain opacity-70"></div>
-                        </div>
-                    </div>
-
-                    <!-- Slide 5 -->
-                    <div class="testimonial-slide">
-                        <div class="flex items-center mb-6">
-                            <div class="flex text-[#14A800] space-x-1 text-sm">
-                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                    class="fa-solid fa-star"></i>
-                            </div>
-                            <span class="ml-3 text-slate-500 text-sm font-medium">5.0 / 5.0</span>
-                        </div>
-                        <p class="text-xl md:text-2xl text-slate-300 font-light italic leading-relaxed mb-8">
-                            "Istiaque is a smart, professional and ethical freelancer. I will recommend him to my
-                            friends and colleagues. He is strong in Website design, layout, project management and
-                            more."
-                        </p>
-                        <div class="flex items-center justify-between border-t border-slate-800 pt-6">
-                            <div>
-                                <h4 class="text-white font-bold text-lg">Shoponyx Layout</h4>
-                                <p class="text-slate-500 text-sm">Upwork Client</p>
-                            </div>
-                            <div class="text-slate-500 text-2xl opacity-50"><img src="./images/upwork icon.png"
-                                    alt="Upwork" class="w-8 h-8 inline-block object-contain opacity-70"></div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Controls -->
-                <div class="flex justify-center mt-8 space-x-3" id="testimonial-dots">
-                    <button class="w-10 h-2 rounded-full bg-accent transition-all duration-300" data-index="0"
-                        aria-label="Slide 1"></button>
-                    <button class="w-3 h-2 rounded-full bg-slate-700 hover:bg-slate-500 transition-all duration-300"
-                        data-index="1" aria-label="Slide 2"></button>
-                    <button class="w-3 h-2 rounded-full bg-slate-700 hover:bg-slate-500 transition-all duration-300"
-                        data-index="2" aria-label="Slide 3"></button>
-                    <button class="w-3 h-2 rounded-full bg-slate-700 hover:bg-slate-500 transition-all duration-300"
-                        data-index="3" aria-label="Slide 4"></button>
-                    <button class="w-3 h-2 rounded-full bg-slate-700 hover:bg-slate-500 transition-all duration-300"
-                        data-index="4" aria-label="Slide 5"></button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="py-24 px-6 lg:px-12 max-w-7xl mx-auto">
-        <div class="fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out mb-16">
-            <h2 class="text-sm font-bold tracking-widest text-accent uppercase mb-3 flex items-center">
-                <span class="w-8 h-0.5 bg-accent mr-4"></span> Featured Work
-            </h2>
-            <h3 class="text-4xl md:text-5xl font-bold text-white">Projects</h3>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Project 1: Medical Image AI Pipeline -->
-            <div
-                class="fade-in-section delay-100 opacity-0 translate-y-8 transition-all duration-700 ease-out group overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all flex flex-col">
-                <div class="p-8 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-6">
-                        <div
-                            class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-solid fa-microscope border-b-0"></i>
-                        </div>
-                        <a href="https://github.com/Utshox/pancreas-segmentation-resolution-study" target="_blank"
-                            class="text-slate-400 hover:text-accent transition-colors"><i
-                                class="fa-brands fa-github text-2xl"></i></a>
-                    </div>
-                    <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Medical
-                        Image AI Pipeline</h4>
-                    <p class="text-slate-400 mb-8 leading-relaxed flex-1">
-                        End-to-end data processing and model training pipeline.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mt-auto">
-                        <span class="text-accent text-sm font-semibold">Python</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">ETL</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">PyTorch</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project 2: Milestone Inspections -->
-            <div
-                class="fade-in-section delay-200 opacity-0 translate-y-8 transition-all duration-700 ease-out group overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all flex flex-col">
-                <div class="p-8 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-6">
-                        <div
-                            class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-regular fa-building border-b-0"></i>
-                        </div>
-                        <a href="https://milestoneinspections.us/" target="_blank"
-                            class="text-slate-400 hover:text-accent transition-colors"><i
-                                class="fa-solid fa-arrow-up-right-from-square text-xl"></i></a>
-                    </div>
-                    <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Milestone
-                        Inspections</h4>
-                    <p class="text-slate-400 mb-8 leading-relaxed flex-1">
-                        Built a high-performance, lead-generating platform from scratch achieving a 95+ Lighthouse
-                        score.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mt-auto">
-                        <span class="text-accent text-sm font-semibold">Custom WordPress</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">PHP</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">Technical SEO</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project 3: Protech System Group -->
-            <div
-                class="fade-in-section delay-300 opacity-0 translate-y-8 transition-all duration-700 ease-out group overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all flex flex-col">
-                <div class="p-8 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-6">
-                        <div
-                            class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-solid fa-network-wired border-b-0"></i>
-                        </div>
-                        <a href="https://www.pteinc.com/" target="_blank"
-                            class="text-slate-400 hover:text-accent transition-colors"><i
-                                class="fa-solid fa-arrow-up-right-from-square text-xl"></i></a>
-                    </div>
-                    <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Protech
-                        System Group</h4>
-                    <p class="text-slate-400 mb-8 leading-relaxed flex-1">
-                        Corporate web platform for technical and engineering systems.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mt-auto">
-                        <span class="text-accent text-sm font-semibold">Web Development</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">B2B</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project 4: Ramadan Donation Hub -->
-            <div
-                class="fade-in-section delay-400 opacity-0 translate-y-8 transition-all duration-700 ease-out group overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all flex flex-col">
-                <div class="p-8 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-6">
-                        <div
-                            class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-solid fa-hand-holding-heart border-b-0"></i>
-                        </div>
-                        <a href="https://www.giveandgorelief.com/" target="_blank"
-                            class="text-slate-400 hover:text-accent transition-colors"><i
-                                class="fa-solid fa-arrow-up-right-from-square text-xl"></i></a>
-                    </div>
-                    <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Ramadan
-                        Donation Hub</h4>
-                    <p class="text-slate-400 mb-8 leading-relaxed flex-1">
-                        A robust donation collection platform built for Give and Go Relief.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mt-auto">
-                        <span class="text-accent text-sm font-semibold">Next.js</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">React</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">Payments</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project 5: Caspian Realty -->
-            <div
-                class="fade-in-section delay-500 opacity-0 translate-y-8 transition-all duration-700 ease-out group overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all flex flex-col">
-                <div class="p-8 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-6">
-                        <div
-                            class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-solid fa-house-chimney border-b-0"></i>
-                        </div>
-                        <a href="https://caspianrealty.com/" target="_blank"
-                            class="text-slate-400 hover:text-accent transition-colors"><i
-                                class="fa-solid fa-arrow-up-right-from-square text-xl"></i></a>
-                    </div>
-                    <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Caspian
-                        Realty</h4>
-                    <p class="text-slate-400 mb-8 leading-relaxed flex-1">
-                        Premium real estate platform with advanced property search and mapping.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mt-auto">
-                        <span class="text-accent text-sm font-semibold">Real Estate</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">Web App</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">Maps API</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Project 6: Rita BNB -->
-            <div
-                class="fade-in-section delay-600 opacity-0 translate-y-8 transition-all duration-700 ease-out group overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600 transition-all flex flex-col">
-                <div class="p-8 flex flex-col flex-1">
-                    <div class="flex justify-between items-start mb-6">
-                        <div
-                            class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xl shrink-0">
-                            <i class="fa-solid fa-bed border-b-0"></i>
-                        </div>
-                        <a href="https://www.ritabnb.com/" target="_blank"
-                            class="text-slate-400 hover:text-accent transition-colors"><i
-                                class="fa-solid fa-arrow-up-right-from-square text-xl"></i></a>
-                    </div>
-                    <h4 class="text-2xl font-bold text-white mb-4 group-hover:text-accent transition-colors">Rita BNB
-                    </h4>
-                    <p class="text-slate-400 mb-8 leading-relaxed flex-1">
-                        Airbnb-style booking platform for vacation rentals with unified availability calendar.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mt-auto">
-                        <span class="text-accent text-sm font-semibold">Booking System</span>
-                        <span class="text-slate-600 text-sm">&bull;</span>
-                        <span class="text-accent text-sm font-semibold">UX/UI</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer / Contact Section -->
-    <footer id="contact" class="bg-slate-950 border-t border-slate-900 py-24 relative overflow-hidden">
-        <!-- Footer background glow -->
-        <div
-            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-accent/10 rounded-[100%] blur-[100px] pointer-events-none">
-        </div>
-
-        <div
-            class="max-w-4xl mx-auto px-6 text-center relative z-10 fade-in-section opacity-0 translate-y-8 transition-all duration-700 ease-out">
-            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Let's build something great together.</h2>
-            <p class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto font-light">
-                Whether you have a question or just want to say hi, I'll try my best to get back to you!
-            </p>
-
-            <a href="mailto:iah.utshox@gmail.com"
-                class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white border-2 border-accent rounded-lg hover:bg-accent/10 transition-colors duration-300 mb-16">
-                <i class="fa-regular fa-envelope mr-3"></i> iah.utshox@gmail.com
-            </a>
-
-            <div class="mb-16">
-                <blockquote class="text-xl font-medium italic text-slate-300 max-w-2xl mx-auto">
-                    "Sometimes it is the people no one can imagine anything of who do the things no one can imagine."
-                </blockquote>
-                <p class="text-slate-500 mt-4">— Alan Turing</p>
-            </div>
-
-            <div class="flex justify-center space-x-8 mb-12 border-t border-slate-800/50 pt-12">
-                <a href="https://www.linkedin.com/in/istiaque-ahmed-ish/" target="_blank"
-                    class="text-slate-400 hover:text-white transition-colors text-2xl" aria-label="LinkedIn">
-                    <i class="fa-brands fa-linkedin"></i>
+<body>
+    <div class="site-shell">
+        <header class="site-header">
+            <div class="container header-inner">
+                <a href="#top" class="brand">
+                    <span class="brand-mark"></span>
+                    <span>Istiaque Ahmed</span>
                 </a>
-                <a href="https://github.com/Utshox" target="_blank"
-                    class="text-slate-400 hover:text-white transition-colors text-2xl" aria-label="GitHub">
-                    <i class="fa-brands fa-github"></i>
-                </a>
-                <a href="https://www.upwork.com/freelancers/~018048fec315a2a872" target="_blank"
-                    class="text-slate-400 hover:text-[#14A800] transition-colors text-2xl flex items-center"
-                    aria-label="Upwork">
-                    <img src="./images/upwork icon.png" alt="Upwork" class="w-6 h-6 inline-block object-contain">
-                </a>
-            </div>
 
-            <!-- Visitor Counter -->
-            <div class="flex flex-col items-center justify-center mb-8">
-                <p class="text-slate-500 text-xs tracking-widest uppercase mb-3">Total Visitors</p>
-                <div id="visitor-counter" class="flex space-x-1.5">
-                    <!-- Fallback/Placeholder blocks -->
-                    <span class="inline-block bg-slate-900 border border-slate-700 text-accent font-mono text-xl md:text-2xl px-2.5 py-1.5 rounded-md shadow-[0_0_10px_rgba(14,165,233,0.2)]">0</span>
-                    <span class="inline-block bg-slate-900 border border-slate-700 text-accent font-mono text-xl md:text-2xl px-2.5 py-1.5 rounded-md shadow-[0_0_10px_rgba(14,165,233,0.2)]">0</span>
-                    <span class="inline-block bg-slate-900 border border-slate-700 text-accent font-mono text-xl md:text-2xl px-2.5 py-1.5 rounded-md shadow-[0_0_10px_rgba(14,165,233,0.2)]">0</span>
-                    <span class="inline-block bg-slate-900 border border-slate-700 text-accent font-mono text-xl md:text-2xl px-2.5 py-1.5 rounded-md shadow-[0_0_10px_rgba(14,165,233,0.2)]">1</span>
-                    <span class="inline-block bg-slate-900 border border-slate-700 text-accent font-mono text-xl md:text-2xl px-2.5 py-1.5 rounded-md shadow-[0_0_10px_rgba(14,165,233,0.2)]">0</span>
-                    <span class="inline-block bg-slate-900 border border-slate-700 text-accent font-mono text-xl md:text-2xl px-2.5 py-1.5 rounded-md shadow-[0_0_10px_rgba(14,165,233,0.2)]">0</span>
+                <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false"
+                    aria-controls="site-nav">
+                    Menu
+                </button>
+
+                <nav id="site-nav" class="site-nav">
+                    <a href="#focus">Focus</a>
+                    <a href="#proof">Proof</a>
+                    <a href="#work">Work</a>
+                    <a href="#testimonials">Testimonials</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+            </div>
+        </header>
+
+        <main id="top">
+            <section class="hero">
+                <div class="container hero-grid">
+                    <div class="hero-copy reveal">
+                        <p class="eyebrow">Technical SEO specialist for sites that need structure, clarity, and growth.</p>
+                        <h1>
+                            I fix the invisible issues
+                            <span>that stop websites from compounding.</span>
+                        </h1>
+                        <div class="hero-rotation">
+                            <span class="hero-rotation-label">Current focus</span>
+                            <span id="rotating-role" class="hero-rotation-value">Technical SEO Audits</span>
+                        </div>
+                        <p class="hero-summary">
+                            I work across crawlability, information architecture, content systems, page speed, and
+                            implementation details that directly affect rankings and qualified traffic.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="#work" class="button button-primary">View SEO-led work</a>
+                            <a href="./Istiaque_Ahmed_SEO_CV.pdf" target="_blank" class="button button-secondary">Open SEO CV</a>
+                        </div>
+                        <ul class="hero-meta">
+                            <li>70+ client projects delivered</li>
+                            <li>Top Rated Plus on Upwork</li>
+                            <li>Growth, technical depth, and clean execution</li>
+                        </ul>
+                    </div>
+
+                    <div class="hero-figure reveal">
+                        <div class="figure-card">
+                            <div class="figure-badge">SEO-led operator</div>
+                            <img src="./images/IstiaqueAhmed.jpg" alt="Portrait of Istiaque Ahmed">
+                            <div class="figure-notes">
+                                <p>Organic growth is rarely blocked by one big mistake.</p>
+                                <p>It is usually blocked by ten small technical decisions.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </section>
+
+            <section class="signal-band">
+                <div class="container signal-grid reveal">
+                    <div>
+                        <span class="signal-label">Positioning</span>
+                        <strong>Technical SEO</strong>
+                    </div>
+                    <div>
+                        <span class="signal-label">Built on</span>
+                        <strong>Development + architecture fluency</strong>
+                    </div>
+                    <div>
+                        <span class="signal-label">Operating style</span>
+                        <strong>Audit, prioritize, implement, measure</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section id="focus" class="section">
+                <div class="container">
+                    <div class="section-heading reveal">
+                        <p class="eyebrow">Focus</p>
+                        <h2>SEO that starts in the codebase, not in a checklist.</h2>
+                    </div>
+
+                    <div class="cards-three">
+                        <article class="card reveal">
+                            <p class="card-index">01</p>
+                            <h3>Technical SEO Audits</h3>
+                            <p>
+                                Crawl analysis, indexation issues, internal linking gaps, rendering problems,
+                                duplication, structured data checks, migrations, and site health prioritization.
+                            </p>
+                        </article>
+                        <article class="card reveal">
+                            <p class="card-index">02</p>
+                            <h3>Content & Architecture</h3>
+                            <p>
+                                Topic clustering, hub-and-spoke structures, URL logic, navigation refinement, and
+                                scalable content systems built to rank without turning the site into a mess.
+                            </p>
+                        </article>
+                        <article class="card reveal">
+                            <p class="card-index">03</p>
+                            <h3>Implementation Depth</h3>
+                            <p>
+                                I am comfortable inside templates, CMS themes, front-end code, APIs, and tracking
+                                setups, which makes recommendations easier to ship and harder to ignore.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section id="proof" class="section section-contrast">
+                <div class="container">
+                    <div class="proof-grid">
+                        <div class="proof-copy reveal">
+                            <p class="eyebrow">Proof</p>
+                            <h2>Not a generalist portfolio. A growth operator with technical range.</h2>
+                            <p>
+                                My background started in web development and expanded into technical SEO through real
+                                client work: fixing architecture issues, improving site performance, and making organic
+                                growth easier to earn.
+                            </p>
+                            <p>
+                                That mix matters. It means I can diagnose the SEO issue, understand the engineering
+                                constraint, and translate both into work that actually gets implemented.
+                            </p>
+                        </div>
+
+                        <div class="proof-panel reveal">
+                            <div class="metric">
+                                <span class="metric-value">70+</span>
+                                <span class="metric-label">projects across web, SEO, and growth work</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">100%</span>
+                                <span class="metric-label">Job Success Score on Upwork</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">150%</span>
+                                <span class="metric-label">organic traffic growth delivered on selected B2B engagements</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="work" class="section">
+                <div class="container">
+                    <div class="section-heading reveal">
+                        <p class="eyebrow">Selected Work</p>
+                        <h2>Case studies where technical decisions supported visibility.</h2>
+                    </div>
+
+                    <div class="work-grid">
+                        <article class="work-card reveal">
+                            <span class="work-tag">Technical SEO + Build</span>
+                            <h3>Milestone Inspections</h3>
+                            <p>
+                                Built a fast, lead-focused platform with strong technical foundations, clean page
+                                structure, and performance discipline that supported search visibility from the start.
+                            </p>
+                            <a href="https://milestoneinspections.us/" target="_blank">Visit site</a>
+                        </article>
+
+                        <article class="work-card reveal">
+                            <span class="work-tag">B2B Architecture</span>
+                            <h3>Protech System Group</h3>
+                            <p>
+                                Corporate web work shaped around discoverability, technical clarity, and a structure that
+                                makes complex service pages easier for both users and search engines to understand.
+                            </p>
+                            <a href="https://www.pteinc.com/" target="_blank">Visit site</a>
+                        </article>
+
+                        <article class="work-card reveal">
+                            <span class="work-tag">SEO + Conversion</span>
+                            <h3>Caspian Realty</h3>
+                            <p>
+                                Premium real-estate platform work involving UX, discoverability, and information
+                                structure for a content-heavy site where visibility and trust need to reinforce each other.
+                            </p>
+                            <a href="https://caspianrealty.com/" target="_blank">Visit site</a>
+                        </article>
+
+                        <article class="work-card reveal">
+                            <span class="work-tag">Platform Execution</span>
+                            <h3>Rita BNB</h3>
+                            <p>
+                                Booking platform work where navigation, crawl paths, property detail structure, and
+                                user flow all had to support both experience and search performance.
+                            </p>
+                            <a href="https://www.ritabnb.com/" target="_blank">Visit site</a>
+                        </article>
+
+                        <article class="work-card reveal">
+                            <span class="work-tag">Fundraising Platform</span>
+                            <h3>Give and Go Relief</h3>
+                            <p>
+                                Built for performance and reliability, with the kind of front-end discipline that makes
+                                future SEO work easier rather than harder.
+                            </p>
+                            <a href="https://www.giveandgorelief.com/" target="_blank">Visit site</a>
+                        </article>
+
+                        <article class="work-card reveal">
+                            <span class="work-tag">Research Discipline</span>
+                            <h3>Master's Thesis Work</h3>
+                            <p>
+                                AI research strengthened my analytical process: define the system, isolate the bottleneck,
+                                test the assumptions, and improve what matters.
+                            </p>
+                            <a href="https://github.com/Utshox/pancreas-segmentation-resolution-study" target="_blank">View repository</a>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section id="testimonials" class="section section-contrast">
+                <div class="container">
+                    <div class="section-heading reveal">
+                        <p class="eyebrow">Testimonials</p>
+                        <h2>Clients usually mention the same thing: detail, clarity, and follow-through.</h2>
+                    </div>
+
+                    <div class="testimonial-shell reveal">
+                        <div class="testimonial-slide is-active">
+                            <p class="quote">
+                                "Your Search Is Over...Hire This Designer!! Istiaque did a fantastic job. We threw a lot
+                                of curve balls, but he handled it all with professionalism and grace."
+                            </p>
+                            <p class="quote-meta">Web Design Project · Upwork Client</p>
+                        </div>
+                        <div class="testimonial-slide">
+                            <p class="quote">
+                                "This guy is incredible! Very knowledgeable and super attentive to detail. He takes the
+                                time to understand every aspect thoroughly and ensures nothing is overlooked."
+                            </p>
+                            <p class="quote-meta">Klaviyo Integration · Upwork Client</p>
+                        </div>
+                        <div class="testimonial-slide">
+                            <p class="quote">
+                                "Istiaque is conscientious, diligent and pays close attention to detail. He not only
+                                provides the service, but has given knowledgeable consultation that exceeded our expectations."
+                            </p>
+                            <p class="quote-meta">Website Makeover · Upwork Client</p>
+                        </div>
+
+                        <div class="testimonial-controls" id="testimonial-controls">
+                            <button type="button" class="is-active" aria-label="Show testimonial 1"></button>
+                            <button type="button" aria-label="Show testimonial 2"></button>
+                            <button type="button" aria-label="Show testimonial 3"></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="section contact-section">
+                <div class="container contact-grid reveal">
+                    <div>
+                        <p class="eyebrow">Contact</p>
+                        <h2>If you need SEO work that survives implementation, I can help.</h2>
+                    </div>
+                    <div class="contact-panel">
+                        <a href="mailto:iah.utshox@gmail.com" class="contact-link">iah.utshox@gmail.com</a>
+                        <div class="contact-actions">
+                            <a href="https://www.linkedin.com/in/istiaque-ahmed-ish/" target="_blank">LinkedIn</a>
+                            <a href="https://github.com/Utshox" target="_blank">GitHub</a>
+                            <a href="https://www.upwork.com/freelancers/~018048fec315a2a872" target="_blank">Upwork</a>
+                            <a href="./Istiaque_Ahmed_SEO_CV.pdf" target="_blank">SEO CV</a>
+                        </div>
+                        <p class="contact-note">
+                            Technical SEO, audits, implementation support, and growth-focused site improvements.
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container footer-inner">
+                <p>&copy; <span id="year"></span> Istiaque Ahmed</p>
+                <p>Built with a deliberate SEO-first portfolio direction.</p>
             </div>
+        </footer>
+    </div>
 
-            <p class="text-slate-600 text-sm">
-                &copy; <span id="year"></span> Istiaque Ahmed. Built with modern web standards.
-            </p>
-        </div>
-    </footer>
-
-    <!-- Custom Script -->
     <script src="./script.js"></script>
 </body>
 
