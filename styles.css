@@ -415,6 +415,8 @@ img {
 .testimonial-shell {
     padding: 2rem;
     overflow: hidden;
+    width: min(80%, 920px);
+    margin: 0 auto;
 }
 
 .testimonial-slide {
@@ -422,7 +424,8 @@ img {
 }
 
 .testimonial-slide.is-active {
-    display: block;
+    display: grid;
+    justify-items: center;
     animation: fadeUp 480ms ease;
 }
 
@@ -433,16 +436,20 @@ img {
     line-height: 1.12;
     letter-spacing: -0.03em;
     max-width: 18ch;
+    text-align: center;
+    text-wrap: balance;
 }
 
 .quote-meta {
     margin: 1.3rem 0 0;
+    text-align: center;
 }
 
 .testimonial-controls {
     display: flex;
     gap: 0.7rem;
     margin-top: 1.8rem;
+    justify-content: center;
 }
 
 .testimonial-controls button {
@@ -461,10 +468,14 @@ img {
 
 .contact-grid {
     grid-template-columns: 1fr 0.9fr;
+    align-items: start;
 }
 
 .contact-panel {
     padding: 1.6rem;
+    width: min(100%, 34rem);
+    justify-self: center;
+    text-align: center;
 }
 
 .contact-link {
@@ -476,7 +487,16 @@ img {
 }
 
 .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.85rem 1.4rem;
     margin-bottom: 1rem;
+}
+
+.contact-note {
+    max-width: 30rem;
+    margin: 0 auto;
 }
 
 .site-footer {
@@ -536,6 +556,10 @@ img {
     .work-grid,
     .signal-grid {
         grid-template-columns: 1fr;
+    }
+
+    .testimonial-shell {
+        width: 100%;
     }
 
     .hero {
