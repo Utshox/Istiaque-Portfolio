@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Owner | 3foxIT — MD Rafiqul Islam Sardar</title>
+    <meta name="description"
+        content="Business owner information for 3foxIT. Owner: MD Rafiqul Islam Sardar. Based in Gaibandha, Bangladesh.">
+    <meta name="robots" content="noindex, follow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --ink: #1a1a1a;
+            --muted: #5a5a5a;
+            --line: #e3e0d8;
+            --bg: #f7f4ec;
+            --card: #ffffff;
+            --accent: #c2410c;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "IBM Plex Sans", system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        .breadcrumb a {
+            color: var(--muted);
+            text-decoration: none;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .breadcrumb a:hover { color: var(--ink); }
+
+        .eyebrow {
+            font-size: 13px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-weight: 600;
+            margin: 0 0 12px;
+        }
+
+        h1 {
+            font-family: "Newsreader", Georgia, serif;
+            font-weight: 600;
+            font-size: 44px;
+            line-height: 1.15;
+            margin: 0 0 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .lead {
+            font-size: 18px;
+            color: var(--muted);
+            max-width: 640px;
+            margin: 0 0 48px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 36px;
+            margin-bottom: 28px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+        }
+
+        .owner-grid {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 36px;
+            align-items: start;
+        }
+
+        @media (max-width: 640px) {
+            .owner-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 32px; }
+            .container { padding: 32px 20px; }
+            .card { padding: 24px; }
+        }
+
+        .portrait {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            display: block;
+        }
+
+        .owner-name {
+            font-family: "Newsreader", Georgia, serif;
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 6px;
+        }
+
+        .owner-role {
+            color: var(--muted);
+            margin: 0 0 24px;
+            font-size: 16px;
+        }
+
+        dl {
+            margin: 0;
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 14px 20px;
+        }
+
+        @media (max-width: 480px) {
+            dl { grid-template-columns: 1fr; gap: 4px 0; }
+            dd { margin-bottom: 12px; }
+        }
+
+        dt {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            font-weight: 600;
+            padding-top: 2px;
+        }
+
+        dd {
+            margin: 0;
+            font-size: 16px;
+            color: var(--ink);
+        }
+
+        dd a {
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 1px solid var(--line);
+        }
+
+        dd a:hover { border-color: var(--ink); }
+
+        h2 {
+            font-family: "Newsreader", Georgia, serif;
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 14px;
+        }
+
+        .card p {
+            margin: 0 0 12px;
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .card p:last-child { margin-bottom: 0; }
+
+        .footer-note {
+            margin-top: 40px;
+            font-size: 13px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .footer-note a {
+            color: var(--muted);
+            border-bottom: 1px solid var(--line);
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="./index.html">Home</a> &nbsp;/&nbsp; Business Owner
+        </nav>
+
+        <p class="eyebrow">Business Owner Information</p>
+        <h1>3foxIT — Owned and operated by MD Rafiqul Islam Sardar</h1>
+        <p class="lead">
+            This page identifies the registered owner of 3foxIT, the business behind the technical SEO and web
+            services delivered through this site.
+        </p>
+
+        <section class="card">
+            <div class="owner-grid">
+                <img class="portrait" src="./images/rafiqul-islam-sardar.jpg"
+                    alt="Portrait of MD Rafiqul Islam Sardar, owner of 3foxIT">
+
+                <div>
+                    <p class="owner-name">MD Rafiqul Islam Sardar</p>
+                    <p class="owner-role">Owner &middot; 3foxIT</p>
+
+                    <dl>
+                        <dt>Full name</dt>
+                        <dd>MD Rafiqul Islam Sardar</dd>
+
+                        <dt>Company</dt>
+                        <dd>3foxIT</dd>
+
+                        <dt>Role</dt>
+                        <dd>Owner</dd>
+
+                        <dt>Phone</dt>
+                        <dd><a href="tel:+8801888397549">+880 1888 397549</a></dd>
+
+                        <dt>Email</dt>
+                        <dd><a href="mailto:iah.uthsoxx@gmail.com">iah.uthsoxx@gmail.com</a></dd>
+
+                        <dt>Address</dt>
+                        <dd>
+                            Daksin Dhangora, Shapla Mill<br>
+                            Gaibandha 5700<br>
+                            Bangladesh
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>About 3foxIT</h2>
+            <p>
+                3foxIT is the business operated by MD Rafiqul Islam Sardar, providing technical SEO, web development,
+                and digital services to international clients. Services are delivered through this site
+                (istiaque.cv) and via freelance marketplaces.
+            </p>
+            <p>
+                Payments for services delivered under 3foxIT are received through the owner&rsquo;s registered
+                Payoneer account. This page exists to confirm the business name, owner identity, and contact
+                details associated with that account.
+            </p>
+        </section>
+
+        <p class="footer-note">
+            For verification queries, contact the email above. &nbsp;&middot;&nbsp;
+            <a href="./index.html">Return to main site</a>
+        </p>
+    </div>
+</body>
+
+</html>
