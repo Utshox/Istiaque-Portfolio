@@ -33,10 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
     revealItems.forEach((item) => revealObserver.observe(item));
 
     const roles = [
-        "Technical SEO Audits",
-        "Site Architecture",
-        "Content Systems",
-        "Organic Growth Strategy"
+        "ML & LLM systems",
+        "RAG & agents",
+        "AWS deployment",
+        "technical SEO",
+        "AI-era search (GEO)"
     ];
 
     const rotatingRole = document.getElementById("rotating-role");
