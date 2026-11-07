@@ -305,6 +305,20 @@
     return (base ? base + path : path);
   }
 
+  /* Some ad blockers (AdGuard on Android) strip <link rel="manifest"> from
+     the HTML, which makes Chrome say "This app cannot be installed". Put it
+     back from JS if it is missing. */
+  (function ensureManifest() {
+    try {
+      if (!document.querySelector('link[rel="manifest"]')) {
+        var l = document.createElement('link');
+        l.rel = 'manifest';
+        l.href = 'manifest.json';
+        document.head.appendChild(l);
+      }
+    } catch (e) {}
+  })();
+
   function getToken() {
     try {
       return localStorage.getItem('um.token') || '';
@@ -316,7 +330,32 @@
   function setToken(tok) {
     try {
       if (tok) localStorage.setItem('um.token', tok);
-      else localStorage.removeItem('um.token');
+      else { localStorage.removeItem('um.token'); cacheClear(); }
+    } catch (e) {}
+  }
+
+  /* Per-user response cache (stale-while-revalidate). Keyed by the uid part
+     of the token, so two accounts on one device never see each other's data;
+     cleared on sign-out. */
+  function cacheUid() { var t = getToken(); return t ? t.split('.')[0] : ''; }
+  function cacheGet(path) {
+    try {
+      var u = cacheUid(); if (!u) return null;
+      var raw = localStorage.getItem('um.c.' + u + '.' + path);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  function cachePut(path, data) {
+    try {
+      var u = cacheUid(); if (!u || !data) return;
+      localStorage.setItem('um.c.' + u + '.' + path, JSON.stringify(data));
+    } catch (e) {}
+  }
+  function cacheClear() {
+    try {
+      Object.keys(localStorage).forEach(function (k) {
+        if (k.indexOf('um.c.') === 0) localStorage.removeItem(k);
+      });
     } catch (e) {}
   }
 
@@ -423,6 +462,16 @@
   }
 
   UM.req = req;
+  UM.cacheGet = cacheGet;
+  UM.cachePut = cachePut;
+  /* GET with cache: returns the network promise (which also refreshes the
+     cache); the cached copy, if any, is available synchronously via cacheGet. */
+  UM.reqCached = function (path) {
+    return req(path).then(function (d) {
+      if (d && !d.error) cachePut(path, d);
+      return d;
+    });
+  };
 
   /* ------------------------------------------------------------------ *
    * Multi-user Authentication API
@@ -531,12 +580,24 @@
     return req('/api/library').then(function (data) {
       if (gen !== authGen) return libState; /* account changed mid-flight */
       if (data && typeof data === 'object' && !data.error) {
+        cachePut('/api/library', data);
+        if (libRev > 0) return libState; /* local edits pending; their save wins */
         adoptLibrary(data);
         libRev = 0;
         emit('library', libState);
       }
       return libState;
     });
+  }
+
+  /* Instant start: adopt the last library this device saw for this user. */
+  function loadCachedLibrary() {
+    var data = cacheGet('/api/library');
+    if (!data || typeof data !== 'object') return false;
+    adoptLibrary(data);
+    libRev = 0;
+    emit('library', libState);
+    return true;
   }
 
   function snapshotPayload() {
@@ -1622,6 +1683,7 @@
 
     lib: libState,
     loadLibrary: loadLibrary,
+    loadCachedLibrary: loadCachedLibrary,
     saveLibrary: saveLibrary,
     isLiked: isLiked,
     toggleLike: toggleLike,

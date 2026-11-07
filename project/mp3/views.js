@@ -230,7 +230,7 @@
       polled = true;
       setTimeout(function () {
         if (!active(token)) return;
-        UM.req('/api/mixes').then(function (d) {
+        UM.reqCached('/api/mixes').then(function (d) {
           if (!active(token) || !d) return;
           if (d.mixes && d.mixes.length) render(homeData, d);
         }).catch(function () {});
@@ -433,18 +433,31 @@
       }
     }
 
+    /* Instant paint from this device's last copy; fresh data replaces it. */
+    var cHome = UM.cacheGet('/api/home'), cMix = UM.cacheGet('/api/mixes');
+    var shownSig = '';
+    if (cHome || cMix) {
+      homeData = cHome || { charts: [], moods: [] };
+      render(homeData, cMix || { mixes: [], stations: [], refined: true });
+      shownSig = JSON.stringify([cHome, cMix]);
+    }
     Promise.all([
-      UM.req('/api/home').catch(function () { return { charts: [], moods: [] }; }),
-      UM.req('/api/mixes').catch(function () { return { mixes: [], stations: [], refined: true }; })
+      UM.reqCached('/api/home').catch(function () { return cHome || { charts: [], moods: [] }; }),
+      UM.reqCached('/api/mixes').catch(function () { return cMix || { mixes: [], stations: [], refined: true }; })
     ]).then(function (res) {
       if (!active(token)) return;
       homeData = res[0] || { charts: [], moods: [] };
       var mixData = res[1] || { mixes: [], stations: [], refined: true };
-      render(homeData, mixData);
+      /* Skip the re-render when nothing changed, so the page doesn't jump. */
+      if (JSON.stringify([res[0], res[1]]) !== shownSig) {
+        var y = window.scrollY, sc = container.scrollTop;
+        render(homeData, mixData);
+        if (shownSig) { container.scrollTop = sc; window.scrollTo(0, y); }
+      }
       maybePoll(mixData);
     }).catch(function (err) {
       if (!active(token)) return;
-      showError(container, err && err.message, function () { views.home(container); });
+      if (!shownSig) showError(container, err && err.message, function () { views.home(container); });
     });
   };
 

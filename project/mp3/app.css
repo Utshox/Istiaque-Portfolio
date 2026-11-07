@@ -4778,3 +4778,14 @@ img {
 .um-app--now-open .um-icon-btn[aria-label*="Now playing"] {
   color: var(--accent);
 }
+
+/* Captain fix 11-08: the phone rule that hides the bar's seek row must not
+   hide the Now Playing sheet's own seek row. */
+.um-pb-seek.um-npfull-seek { display: flex !important; align-items: center; gap: 10px; }
+.um-npfull-seek .um-range { flex: 1 1 auto; min-width: 0; height: 28px; touch-action: none; }
+.um-npfull-artist--link {
+  background: none; border: 0; padding: 4px 0; margin: 0; text-align: left;
+  font: inherit; font-size: 16px; color: var(--text-2); cursor: pointer;
+  align-self: flex-start; max-width: 100%;
+}
+.um-npfull-artist--link:hover, .um-npfull-artist--link:active { color: var(--text-1, #fff); text-decoration: underline; }

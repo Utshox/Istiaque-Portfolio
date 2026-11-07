@@ -570,7 +570,25 @@
   });
   var npFullTextStack = h('div', { className: 'um-np-text', style: 'flex:1 1 auto;min-width:0;' });
   var npFullTitle = h('div', { className: 'um-npfull-title', text: 'Nothing playing' });
-  var npFullArtist = h('div', { className: 'um-npfull-artist', text: '' });
+  var npFullArtist = h('button', {
+    className: 'um-npfull-artist um-npfull-artist--link',
+    text: '',
+    onClick: function (e) {
+      e.stopPropagation();
+      var cur = player.current();
+      if (!cur) return;
+      var dest = cur.artistId
+        ? '#/artist/' + encodeURIComponent(cur.artistId)
+        : '#/search?q=' + encodeURIComponent(String(cur.artists || '').split(/,|&| feat\.? /i)[0].trim()) + '&type=artists';
+      /* Close the sheet but keep its history entry: it becomes "back". */
+      if (state.nowSheetOpen) {
+        state.nowSheetOpen = false;
+        nowSheet.classList.add('um-hidden');
+        releaseLayer('sheet', true);
+      }
+      ui.nav(dest);
+    }
+  });
   npFullTextStack.appendChild(npFullTitle);
   npFullTextStack.appendChild(npFullArtist);
 
@@ -590,7 +608,7 @@
 
   /* Sheet Seek Control with elapsed / total time */
   var fullSeek = h('div', {
-    className: 'um-pb-seek',
+    className: 'um-pb-seek um-npfull-seek',
     style: 'width:100%;max-width:none;padding:6px 0;flex:0 0 auto;'
   });
   var fullTimeCur = h('span', { className: 'um-pb-time', text: '0:00' });
@@ -2064,16 +2082,26 @@
     syncPanelLayout();
 
     if (core.token()) {
+      /* Draw straight away from this device's cached copy, then refresh. */
+      var hadCache = core.loadCachedLibrary();
+      if (hadCache) {
+        applySettingsToPlayer(core.lib.settings);
+        renderLibList();
+        player.restore();
+        router();
+      }
       core.loadLibrary()
         .then(function (lib) {
-          applySettingsToPlayer(lib.settings);
+          if (!hadCache) {
+            applySettingsToPlayer(lib.settings);
+            player.restore();
+            router();
+          }
           renderLibList();
-          player.restore();
-          router();
         })
         .catch(function () {
           renderLibList();
-          router();
+          if (!hadCache) router();
         });
     } else {
       router();
