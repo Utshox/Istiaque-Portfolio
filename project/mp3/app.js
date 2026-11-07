@@ -734,16 +734,43 @@
   var sheetNextList = h('div', { className: 'um-queue-list' });
   paneNext.appendChild(sheetNextList);
 
-  npFullSide.appendChild(npFullHeaderRow);
-  npFullSide.appendChild(fullSeek);
-  npFullSide.appendChild(npFullControls);
+  /* Volume row (PC/tablet; phones use the hardware buttons). */
+  var fullVol = h('div', { className: 'um-npfull-vol' });
+  var fullMuteBtn = h('button', {
+    className: 'um-icon-btn',
+    title: 'Mute',
+    html: icon('volHigh'),
+    onClick: function () { muteBtn.click(); }
+  });
+  var fullVolRange = h('input', { className: 'um-range um-range--sm', type: 'range', min: 0, max: 100, value: 80 });
+  fullVolRange.addEventListener('input', function () {
+    volRange.value = fullVolRange.value;
+    volRange.dispatchEvent(new Event('input'));
+    fullVolRange.style.setProperty('--um-fill', fullVolRange.value + '%');
+  });
+  var fullVolPct = h('span', { className: 'um-npfull-vol-pct', text: '80%' });
+  fullVol.appendChild(fullMuteBtn);
+  fullVol.appendChild(fullVolRange);
+  fullVol.appendChild(fullVolPct);
+
+  /* Left "stage": art + title + seek + transport + volume, one centred column.
+     Right side: lyrics / up next. Phones stack the two. */
+  var npFullBg = h('div', { className: 'um-npfull-bg' });
+  var npFullStage = h('div', { className: 'um-npfull-stage' });
+  npFullStage.appendChild(npFullArt);
+  npFullStage.appendChild(npFullHeaderRow);
+  npFullStage.appendChild(fullSeek);
+  npFullStage.appendChild(npFullControls);
+  npFullStage.appendChild(fullVol);
+
   npFullSide.appendChild(npTabs);
   npFullSide.appendChild(paneLyrics);
   npFullSide.appendChild(paneNext);
 
-  npFull.appendChild(npFullArt);
+  npFull.appendChild(npFullStage);
   npFull.appendChild(npFullSide);
 
+  sheetPanel.appendChild(npFullBg);
   sheetPanel.appendChild(sheetGripArea);
   sheetPanel.appendChild(sheetClose);
   sheetPanel.appendChild(npFull);
@@ -1671,6 +1698,8 @@
     npFullArtist.textContent = t.artists || '';
     npFullArt.innerHTML = '';
     npFullArt.appendChild(ui.img(t.art || t.thumb, ''));
+    var bgUrl = t.art || t.thumb || '';
+    npFullBg.style.backgroundImage = bgUrl ? 'url("' + String(bgUrl).replace(/"/g, '%22') + '")' : 'none';
   }
 
   function updateLikeButtons(currentTrackId) {
@@ -1785,6 +1814,10 @@
     volRange.value = Math.round(snap.volume * 100);
     volRange.style.setProperty('--um-fill', (snap.volume * 100) + '%');
     muteBtn.innerHTML = snap.volume <= 0.001 ? icon('volMute') : icon('volHigh');
+    fullVolRange.value = Math.round(snap.volume * 100);
+    fullVolRange.style.setProperty('--um-fill', (snap.volume * 100) + '%');
+    fullVolPct.textContent = Math.round(snap.volume * 100) + '%';
+    fullMuteBtn.innerHTML = snap.volume <= 0.001 ? icon('volMute') : icon('volHigh');
 
     syncLyricsPosition(snap.position);
   });
