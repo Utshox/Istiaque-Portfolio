@@ -786,12 +786,47 @@
   window.addEventListener('resize', syncPanelLayout);
 
   /* ------------------------------------------------------------------ *
+   * Back button: every full-screen layer (Now Playing sheet, queue, phone
+   * library drawer, menus, dialogs) pushes a history entry, so the browser /
+   * Android back button closes the layer instead of leaving the app.
+   * ------------------------------------------------------------------ */
+  var layerStack = [];
+  var suppressPops = 0;
+  function pushLayer(name, closeFn) {
+    for (var i = 0; i < layerStack.length; i++) if (layerStack[i].name === name) return;
+    layerStack.push({ name: name, close: closeFn });
+    try { history.pushState({ umLayer: name }, ''); } catch (e) {}
+  }
+  function releaseLayer(name, noBack) {
+    // Called when the UI closed a layer itself (X button, swipe, Esc).
+    // noBack: the close is followed by a navigation, so leave the entry in
+    // place (it then simply acts as the previous page).
+    for (var i = layerStack.length - 1; i >= 0; i--) {
+      if (layerStack[i].name === name) {
+        layerStack.splice(i, 1);
+        if (!noBack && history.state && history.state.umLayer) { suppressPops++; history.back(); }
+        return;
+      }
+    }
+  }
+  window.addEventListener('popstate', function () {
+    if (suppressPops > 0) { suppressPops--; return; }
+    var top = layerStack.pop();
+    if (top) { try { top.close(true); } catch (e) {} }
+  });
+  UM.layers = { push: pushLayer, release: releaseLayer };
+
+  /* ------------------------------------------------------------------ *
    * Visibility & Toggle Controllers
    * ------------------------------------------------------------------ */
-  function toggleMobileLib(show) {
+  function toggleMobileLib(show, fromPop) {
     if (show == null) show = !state.libOpen;
+    if (show === state.libOpen) return;
     state.libOpen = show;
     rootApp.classList.toggle('um-app--lib-open', show);
+    if (show) pushLayer('lib', function () { toggleMobileLib(false, true); });
+    else if (fromPop === 'nav') releaseLayer('lib', true);
+    else if (!fromPop) releaseLayer('lib');
   }
 
   function toggleNowPanel(show) {
@@ -809,11 +844,13 @@
     if (show) renderNowPanel();
   }
 
-  function toggleQueue(show) {
+  function toggleQueue(show, fromPop) {
     if (show == null) show = !state.queueOpen;
+    if (show === state.queueOpen) return;
     state.queueOpen = show;
     queueDrawer.classList.toggle('um-queue--open', show);
-    if (show) renderQueueDrawer();
+    if (show) { renderQueueDrawer(); pushLayer('queue', function () { toggleQueue(false, true); }); }
+    else if (!fromPop) releaseLayer('queue');
   }
 
   function onArtClick() {
@@ -825,16 +862,24 @@
   }
 
   function openNowSheet(tab) {
+    if (!state.nowSheetOpen) pushLayer('sheet', function () { closeNowSheet(true); });
     state.nowSheetOpen = true;
     nowSheet.classList.remove('um-hidden');
     setSheetTab(tab || 'lyrics');
     syncNowSheetTrack(player.current());
+    state.activeLyricIdx = -1;
     loadLyrics(player.current());
+    setTimeout(function () {
+      var act = lyricsScroller.querySelector('.um-lyrics-line--active');
+      if (act) scrollLyricLineIntoView(act, true);
+    }, 80);
   }
 
-  function closeNowSheet() {
+  function closeNowSheet(fromPop) {
+    if (!state.nowSheetOpen) return;
     state.nowSheetOpen = false;
     nowSheet.classList.add('um-hidden');
+    if (!fromPop) releaseLayer('sheet');
   }
 
   function setSheetTab(tab) {
@@ -844,6 +889,12 @@
     paneLyrics.classList.toggle('um-np-pane--hidden', tab !== 'lyrics');
     paneNext.classList.toggle('um-np-pane--hidden', tab !== 'next');
     if (tab === 'next') renderSheetNextList();
+    if (tab === 'lyrics') {
+      setTimeout(function () {
+        var act = lyricsScroller.querySelector('.um-lyrics-line--active');
+        if (act) scrollLyricLineIntoView(act, true);
+      }, 60);
+    }
   }
 
   /* Swipe-down on phone sheet grip to dismiss */
@@ -1072,13 +1123,44 @@
     }
 
     if (activeIdx >= 0 && lines[activeIdx]) {
-      var targetLine = lines[activeIdx];
-      var scrollContainer = (window.innerWidth <= 900) ? npFull : lyricsScroller;
-      var containerRect = scrollContainer.getBoundingClientRect();
-      var lineRect = targetLine.getBoundingClientRect();
-      var offset = lineRect.top - containerRect.top - (scrollContainer.clientHeight / 2) + (targetLine.clientHeight / 2);
-      scrollContainer.scrollBy({ top: offset, behavior: 'smooth' });
+      scrollLyricLineIntoView(lines[activeIdx]);
     }
+  }
+
+  /* Auto-scroll: centre the active line inside whichever ancestor actually
+     scrolls (the lyrics box on desktop, the sheet on some phone layouts).
+     A manual scroll by the user pauses auto-scroll for 4 s. */
+  var lyricsUserScrollUntil = 0;
+  var lyricsProgrammaticScroll = false;
+  function markLyricsUserScroll() {
+    if (lyricsProgrammaticScroll) return;
+    lyricsUserScrollUntil = Date.now() + 4000;
+  }
+  ['wheel', 'touchmove'].forEach(function (ev) {
+    lyricsScroller.addEventListener(ev, markLyricsUserScroll, { passive: true });
+    npFull.addEventListener(ev, markLyricsUserScroll, { passive: true });
+  });
+
+  function scrollableAncestor(el) {
+    var node = el.parentElement;
+    while (node && node !== document.body) {
+      var oy = getComputedStyle(node).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight + 2) return node;
+      node = node.parentElement;
+    }
+    return null;
+  }
+
+  function scrollLyricLineIntoView(line, instant) {
+    if (!instant && Date.now() < lyricsUserScrollUntil) return;
+    var box = scrollableAncestor(line);
+    if (!box) return;
+    var boxRect = box.getBoundingClientRect();
+    var lineRect = line.getBoundingClientRect();
+    var target = box.scrollTop + (lineRect.top - boxRect.top) - (box.clientHeight / 2) + (lineRect.height / 2);
+    lyricsProgrammaticScroll = true;
+    box.scrollTo({ top: Math.max(0, target), behavior: instant ? 'auto' : 'smooth' });
+    setTimeout(function () { lyricsProgrammaticScroll = false; }, 600);
   }
 
   function updateNowPanelLyricsPreview(curIdx) {
@@ -1359,7 +1441,7 @@
         className: 'um-lib-row',
         style: 'min-height:56px;',
         onClick: function () {
-          toggleMobileLib(false);
+          toggleMobileLib(false, 'nav');
           ui.nav('#/liked');
         }
       },
@@ -1378,7 +1460,7 @@
         className: 'um-lib-row',
         style: 'min-height:56px;',
         onClick: function () {
-          toggleMobileLib(false);
+          toggleMobileLib(false, 'nav');
           ui.nav('#/home');
         }
       },
@@ -1409,7 +1491,7 @@
             className: 'um-lib-row',
             style: 'min-height:56px;',
             onClick: function () {
-              toggleMobileLib(false);
+              toggleMobileLib(false, 'nav');
               ui.nav('#/userpl/' + encodeURIComponent(pl.id));
             },
             onContextmenu: function (e) {
@@ -1475,7 +1557,7 @@
           className: 'um-lib-row',
           style: 'min-height:56px;',
           onClick: function () {
-            toggleMobileLib(false);
+            toggleMobileLib(false, 'nav');
             ui.nav('#/album/' + encodeURIComponent(alb.id));
           }
         },
@@ -1506,7 +1588,7 @@
           className: 'um-lib-row',
           style: 'min-height:56px;',
           onClick: function () {
-            toggleMobileLib(false);
+            toggleMobileLib(false, 'nav');
             ui.nav('#/artist/' + encodeURIComponent(art.id));
           }
         },

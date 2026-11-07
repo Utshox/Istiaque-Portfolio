@@ -1354,6 +1354,41 @@
       h('div', { className: 'um-settings-title', text: 'Playback' })
     );
 
+    /* audio quality: pills (Data saver / Normal / High) */
+    var QUALITY = [
+      { v: 'low', label: 'Data saver', hint: ui.isIOS() ? '~48 kbps AAC' : '~50-70 kbps Opus' },
+      { v: 'normal', label: 'Normal', hint: '128 kbps AAC' },
+      { v: 'high', label: 'High', hint: ui.isIOS() ? '128 kbps (max on iPhone)' : '~160 kbps Opus' }
+    ];
+    var curQ = (core.lib.settings && core.lib.settings.quality) || 'normal';
+    var qHint = h('span', { className: 'um-settings-hint', text: '' });
+    var qPills = h('div', { style: 'display:flex;flex-wrap:wrap;gap:8px;' });
+    function paintQuality() {
+      qPills.innerHTML = '';
+      QUALITY.forEach(function (opt) {
+        qPills.appendChild(h('button', {
+          className: 'um-pill' + (opt.v === curQ ? ' um-pill--active' : ''),
+          text: opt.label,
+          onClick: function () {
+            curQ = opt.v;
+            core.lib.settings.quality = opt.v;
+            scheduleLibrarySave();
+            paintQuality();
+            ui.toast('Audio quality: ' + opt.label + ' (from the next song)');
+          }
+        }));
+        if (opt.v === curQ) qHint.textContent = opt.hint + ' · applies from the next song';
+      });
+    }
+    paintQuality();
+    playbackSec.appendChild(h('div', { className: 'um-settings-row' },
+      h('div', {},
+        h('span', { className: 'um-settings-label', text: 'Audio quality' }),
+        qHint
+      ),
+      qPills
+    ));
+
     if (!ui.isIOS()) {
       var currentXfade = (UM.player && UM.player.state && UM.player.state.crossfade) || 0;
       var xfadeVal = h('span', { className: 'um-settings-value', text: currentXfade + 's' });

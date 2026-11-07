@@ -1,5 +1,5 @@
 /*
- * UTSHOW Music: published build config (istiaque.cv/project/Mp3).
+ * UTSHOW Music: published build config (istiaque.cv/project/mp3).
  * The page is static (GitHub Pages); all API calls and audio go to the
  * private server below, which requires a signed-in account.
  */

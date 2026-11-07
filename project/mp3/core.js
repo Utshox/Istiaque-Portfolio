@@ -331,8 +331,23 @@
     } catch (e) {}
   }
 
+  /* Effective quality for this device: iOS Safari can't play Opus/webm
+     reliably, so "high" falls back to 128 kbps AAC and "low" uses the AAC
+     data-saver track. */
+  function streamQuality() {
+    var L = (UM.core && UM.core.lib) || null;
+    var q = (L && L.settings && L.settings.quality) || 'normal';
+    if (isIOS()) {
+      if (q === 'high') return 'normal';
+      if (q === 'low') return 'low-aac';
+    }
+    return q;
+  }
+
   function streamUrl(id) {
     var url = api('/api/stream/' + encodeURIComponent(id));
+    var q = streamQuality();
+    if (q !== 'normal') url += '?q=' + encodeURIComponent(q);
     var tok = getToken();
     if (tok) {
       url += (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + encodeURIComponent(tok);
@@ -761,12 +776,14 @@
     }
   }
 
-  function closeMenu() {
+  function closeMenu(fromPop, noBack) {
+    var wasOpen = !!activeMenuEl;
     if (activeMenuEl) {
       if (activeMenuEl.parentNode) activeMenuEl.parentNode.removeChild(activeMenuEl);
       activeMenuEl = null;
     }
     document.removeEventListener('keydown', onMenuKeyDown, true);
+    if (wasOpen && fromPop !== true && UM.layers) UM.layers.release('menu', !!noBack);
   }
 
   document.addEventListener('click', function (e) {
@@ -791,7 +808,7 @@
             className: 'um-menu-item' + (item.danger ? ' um-menu-item--danger' : ''),
             onClick: function (e) {
               e.stopPropagation();
-              closeMenu();
+              closeMenu(false, true); // the action may navigate; keep history intact
               if (item.action) item.action();
             }
           });
@@ -826,6 +843,7 @@
 
     document.body.appendChild(m);
     activeMenuEl = m;
+    if (UM.layers) UM.layers.push('menu', function () { closeMenu(true); });
     document.addEventListener('keydown', onMenuKeyDown, true);
     return m;
   }
@@ -855,10 +873,12 @@
       { text: 'Close', primary: true, onClick: function (close) { close(); } }
     ];
 
-    function close() {
+    var layerName = 'dialog-' + Math.random().toString(36).slice(2, 8);
+    function close(fromPop) {
       if (closed) return;
       closed = true;
       if (scrim.parentNode) scrim.parentNode.removeChild(scrim);
+      if (fromPop !== true && UM.layers) UM.layers.release(layerName);
       document.removeEventListener('keydown', onKeyDown, true);
       if (typeof opts.onClose === 'function') {
         try { opts.onClose(); } catch (e) { console.error(e); }
@@ -894,6 +914,7 @@
     dlg.appendChild(actionsRow);
     scrim.appendChild(dlg);
     document.body.appendChild(scrim);
+    if (UM.layers) UM.layers.push(layerName, function () { close(true); });
     return { close: close, element: dlg };
   }
 
