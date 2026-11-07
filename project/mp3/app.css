@@ -4850,3 +4850,17 @@ img {
   .um-npfull-vol { display: none; }
   .um-npfull-bg { opacity: .35; }
 }
+
+/* Captain fix 11-08c: playlist import dialog */
+.um-dialog-input.um-import-paste {
+  height: auto;
+  min-height: 96px;
+  padding: 10px 14px;
+  resize: vertical;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+.um-import-status { min-height: 1.4em; margin: 0 0 8px; font-size: 14px; }
+.um-import-status:empty { display: none; }

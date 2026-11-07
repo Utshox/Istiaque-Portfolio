@@ -726,6 +726,23 @@
     return pl;
   }
 
+  function createPlaylistWithTracks(name, tracks) {
+    var n = (name || '').trim() || 'Imported playlist';
+    var seen = {};
+    var list = (tracks || []).filter(function (t) {
+      if (!t || !t.id || seen[t.id]) return false;
+      seen[t.id] = true;
+      return true;
+    });
+    var pl = { id: 'pl-' + Date.now() + '-' + Math.floor(Math.random() * 1000), name: n, tracks: list };
+    if (!libState.playlists) libState.playlists = [];
+    libState.playlists.push(pl);
+    markDirty();
+    scheduleSaveLibrary();
+    emit('library', libState);
+    return pl;
+  }
+
   function renamePlaylist(pid, newName) {
     var n = (newName || '').trim();
     if (!n || !pid) return false;
@@ -1690,6 +1707,7 @@
     toggleLike: toggleLike,
     addToPlaylist: addToPlaylist,
     createPlaylist: createPlaylist,
+    createPlaylistWithTracks: createPlaylistWithTracks,
     renamePlaylist: renamePlaylist,
     deletePlaylist: deletePlaylist,
     recordHistory: recordHistory,

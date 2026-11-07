@@ -997,6 +997,11 @@
           html: icon('plus'),
           children: [document.createTextNode(' Create playlist')],
           onClick: newPlaylistFlow
+        }),
+        h('button', {
+          className: 'um-btn um-btn--ghost',
+          text: 'Import from Spotify',
+          onClick: function () { views.importPlaylistFlow(); }
         })
       ),
       h('div', { className: 'um-search-tabs', style: 'padding-left:0;padding-right:0;' },
@@ -1082,6 +1087,84 @@
       );
       container.appendChild(empty);
     }
+  };
+
+  /* -------------------------------------------------- playlist import */
+
+  views.importPlaylistFlow = function () {
+    var urlIn = h('input', {
+      className: 'um-dialog-input', type: 'url',
+      placeholder: 'https://open.spotify.com/playlist/…'
+    });
+    var pasteIn = h('textarea', {
+      className: 'um-dialog-input um-import-paste',
+      placeholder: 'Or paste songs, one per line:\nArtist - Song title',
+      rows: 4
+    });
+    var status = h('p', { className: 'um-dialog-text um-import-status', text: '' });
+    var busy = false;
+    var stopped = false;
+
+    function setStatus(t) { status.textContent = t; }
+
+    function poll(job, close) {
+      if (stopped) return;
+      UM.req('/api/import/' + encodeURIComponent(job)).then(function (st) {
+        if (stopped) return;
+        if (!st.finished) {
+          setStatus('Matching songs… ' + st.done + ' / ' + st.total);
+          setTimeout(function () { poll(job, close); }, 1200);
+          return;
+        }
+        busy = false;
+        if (!st.tracks.length) {
+          setStatus('None of the ' + st.total + ' songs were found on YouTube Music.');
+          return;
+        }
+        var pl = core.createPlaylistWithTracks(st.name, st.tracks);
+        var msg = 'Imported ' + st.tracks.length + ' of ' + st.total + ' songs';
+        if (st.capped) msg += ' (Spotify links give the first 100 only)';
+        ui.toast(msg);
+        if (st.missing && st.missing.length) console.info('[import] not found:', st.missing);
+        close();
+        if (pl) ui.nav('#/userpl/' + encodeURIComponent(pl.id));
+      }).catch(function (err) {
+        busy = false;
+        setStatus('Import failed: ' + ((err && err.message) || 'unknown error'));
+      });
+    }
+
+    ui.dialog({
+      title: 'Import a playlist',
+      text: 'Paste a public Spotify playlist or album link. Each song is matched on YouTube Music.',
+      body: [urlIn, pasteIn, status],
+      onClose: function () { stopped = true; },
+      actions: [
+        { text: 'Cancel', onClick: function (close) { close(); } },
+        {
+          text: 'Import', primary: true,
+          onClick: function (close) {
+            if (busy) return;
+            var url = urlIn.value.trim();
+            var text = pasteIn.value.trim();
+            if (!url && !text) { setStatus('Paste a link or a song list first.'); return; }
+            busy = true;
+            setStatus(url ? 'Reading the Spotify playlist…' : 'Reading the song list…');
+            UM.req('/api/import/playlist', {
+              method: 'POST',
+              body: url ? { url: url } : { text: text, name: 'Imported playlist' }
+            }).then(function (r) {
+              setStatus('Matching songs… 0 / ' + r.total);
+              poll(r.job, close);
+            }).catch(function (err) {
+              busy = false;
+              setStatus((err && err.message) || 'Import failed');
+            });
+          }
+        }
+      ]
+    });
+    setTimeout(function () { try { urlIn.focus(); } catch (e) {} }, 50);
   };
 
   /* -------------------------------------------------- user playlist page */
