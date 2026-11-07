@@ -1295,13 +1295,6 @@
       playThis();
     });
 
-    var hoverTimer = null;
-    row.addEventListener('mouseenter', function () {
-      hoverTimer = setTimeout(function () { prefetch([track.id]); }, 350);
-    });
-    row.addEventListener('mouseleave', function () { clearTimeout(hoverTimer); });
-    row.addEventListener('pointerdown', function () { prefetch([track.id]); });
-
     row.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && e.target === row) {
         e.preventDefault();
@@ -1415,9 +1408,6 @@
     var list = tracks || [];
     for (var i = 0; i < list.length; i++) {
       container.appendChild(trackRow(list[i], Object.assign({}, opts, { index: i, list: list })));
-    }
-    if (list.length && !opts.noPrefetch) {
-      setTimeout(function () { prefetch([list[0] && list[0].id]); }, 600);
     }
     return container;
   }

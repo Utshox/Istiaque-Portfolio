@@ -540,7 +540,7 @@
               gridTwo.appendChild(h('div', {},
                 h('h3', { className: 'um-section-title', style: 'font-size:18px;margin:0 0 8px;', text: 'Songs' }),
                 listWithSource(songs.slice(0, 5), {
-                  onPlayTrack: function (idx) { playTracks(songs, idx, 'search', false); }
+                  onPlayTrack: function (idx) { playOneTrack(songs[idx], 'search', false); }
                 }, 'search')
               ));
             }
@@ -587,7 +587,7 @@
           }
           if (type === 'songs') {
             resultsBox.appendChild(listWithSource(items, {
-              onPlayTrack: function (idx) { playTracks(items, idx, 'search', false); }
+              onPlayTrack: function (idx) { playOneTrack(items[idx], 'search', false); }
             }, 'search'));
           } else {
             var grid = h('div', { className: 'um-grid' });
