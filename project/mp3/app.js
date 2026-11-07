@@ -1767,7 +1767,7 @@
         if (nt && nt.id) ids.push(nt.id);
       }
       if (ids.length) {
-        UM.req('/api/prefetch', { method: 'POST', body: { ids: ids, q: core.streamQuality() } }).catch(function () {});
+        core.prefetch(ids);
       }
     } catch (e) {}
 

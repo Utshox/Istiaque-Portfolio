@@ -388,6 +388,21 @@
     return q;
   }
 
+  /* Ask the server to look songs up ahead of time (each cold lookup costs it
+     ~5 s). Each id is sent at most once per 20 minutes. */
+  var prefetchSent = {};
+  function prefetch(ids) {
+    var now = Date.now(), out = [];
+    for (var i = 0; i < (ids || []).length && out.length < 3; i++) {
+      var id = ids[i];
+      if (!id || (prefetchSent[id] && now - prefetchSent[id] < 1200000)) continue;
+      prefetchSent[id] = now;
+      out.push(id);
+    }
+    if (!out.length || !getToken()) return;
+    req('/api/prefetch', { method: 'POST', body: { ids: out, q: streamQuality() } }).catch(function () {});
+  }
+
   function streamUrl(id) {
     var url = api('/api/stream/' + encodeURIComponent(id));
     var q = streamQuality();
@@ -1280,6 +1295,13 @@
       playThis();
     });
 
+    var hoverTimer = null;
+    row.addEventListener('mouseenter', function () {
+      hoverTimer = setTimeout(function () { prefetch([track.id]); }, 350);
+    });
+    row.addEventListener('mouseleave', function () { clearTimeout(hoverTimer); });
+    row.addEventListener('pointerdown', function () { prefetch([track.id]); });
+
     row.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && e.target === row) {
         e.preventDefault();
@@ -1393,6 +1415,9 @@
     var list = tracks || [];
     for (var i = 0; i < list.length; i++) {
       container.appendChild(trackRow(list[i], Object.assign({}, opts, { index: i, list: list })));
+    }
+    if (list.length && !opts.noPrefetch) {
+      setTimeout(function () { prefetch([list[0] && list[0].id]); }, 600);
     }
     return container;
   }
@@ -1703,6 +1728,7 @@
     loadLibrary: loadLibrary,
     loadCachedLibrary: loadCachedLibrary,
     streamQuality: streamQuality,
+    prefetch: prefetch,
     saveLibrary: saveLibrary,
     isLiked: isLiked,
     toggleLike: toggleLike,
