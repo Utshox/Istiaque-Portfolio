@@ -1263,21 +1263,22 @@
      * A click handler is never installed alongside the double-click handler,
      * so a double-click can never start playback twice (which previously
      * toggled the transport and looked like a spontaneous pause). */
-    if (isTouch()) {
-      var lastTapAt = 0;
-      row.addEventListener('click', function (e) {
-        if (isInteractiveTarget(e.target, row)) return;
-        var now = Date.now();
-        if (now - lastTapAt < 450) { lastTapAt = now; return; }
-        lastTapAt = now;
-        playThis();
-      });
-    } else {
-      row.addEventListener('dblclick', function (e) {
-        if (isInteractiveTarget(e.target, row)) return;
-        playThis();
-      });
-    }
+    /* Single click/tap plays (like Spotify). Clicks within 450 ms of the last
+     * one are ignored so a double-click can't start the song twice. Clicking
+     * the song that is already loaded toggles play/pause instead of restarting. */
+    var lastTapAt = 0;
+    row.addEventListener('click', function (e) {
+      if (isInteractiveTarget(e.target, row)) return;
+      var now = Date.now();
+      if (now - lastTapAt < 450) { lastTapAt = now; return; }
+      lastTapAt = now;
+      var c = (UM.player && typeof UM.player.current === 'function') ? UM.player.current() : null;
+      if (c && c.id === track.id && typeof UM.player.toggle === 'function') {
+        UM.player.toggle();
+        return;
+      }
+      playThis();
+    });
 
     row.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' && e.target === row) {

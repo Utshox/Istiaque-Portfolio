@@ -4864,3 +4864,36 @@ img {
 }
 .um-import-status { min-height: 1.4em; margin: 0 0 8px; font-size: 14px; }
 .um-import-status:empty { display: none; }
+
+/* Captain fix 11-08d: playing equalizer + hover play, Spotify-style rows */
+.um-track { cursor: pointer; }
+.um-track-idx .um-eq { height: 14px; gap: 2px; }
+.um-track-idx .um-eq-bar { width: 3px; height: 14px; }
+.um-eq-bar:nth-child(1) { animation-name: um-eq-a; }
+.um-eq-bar:nth-child(2) { animation-name: um-eq-b; }
+.um-eq-bar:nth-child(3) { animation-name: um-eq-c; }
+@keyframes um-eq-a { 0%,100% { transform: scaleY(.3); } 25% { transform: scaleY(1); } 50% { transform: scaleY(.55); } 75% { transform: scaleY(.85); } }
+@keyframes um-eq-b { 0%,100% { transform: scaleY(.9); } 30% { transform: scaleY(.35); } 60% { transform: scaleY(1); } 80% { transform: scaleY(.5); } }
+@keyframes um-eq-c { 0%,100% { transform: scaleY(.55); } 20% { transform: scaleY(.8); } 45% { transform: scaleY(.25); } 70% { transform: scaleY(1); } }
+.um-track--current.um-paused .um-eq-bar { animation-play-state: paused; transform: scaleY(.35); }
+/* A three-bar equalizer is small and meaningful; keep it moving even when the
+   OS asks for reduced motion (Windows "Animation effects" off), just slower. */
+@media (prefers-reduced-motion: reduce) {
+  .um-eq-bar { animation-duration: 1400ms !important; animation-iteration-count: infinite !important; }
+  .um-eq-bar:nth-child(2) { animation-duration: 1150ms !important; }
+  .um-eq-bar:nth-child(3) { animation-duration: 1650ms !important; }
+}
+/* Hover: number turns into a play icon (desktop only) */
+@media (hover: hover) {
+  .um-track:not(.um-track--current):hover .um-track-idx { font-size: 0; color: transparent; }
+  .um-track:not(.um-track--current):hover .um-track-idx::after {
+    content: ''; display: block; width: 12px; height: 14px; margin: 0 auto;
+    background: var(--text);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+  .um-track--current.um-paused:hover .um-track-idx .um-eq { display: none; }
+  .um-track--current.um-paused:hover .um-track-idx::after {
+    content: ''; display: block; width: 12px; height: 14px; margin: 0 auto;
+    background: var(--accent); clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+}

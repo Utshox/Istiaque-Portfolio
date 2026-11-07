@@ -1799,8 +1799,8 @@
       fullPlayBtn.classList.toggle('um-pb-play--needs-gesture', !!snap.needsGesture);
     }
 
-    var eqTrack = document.querySelector('.um-track--current');
-    if (eqTrack) eqTrack.classList.toggle('um-paused', !snap.playing);
+    var eqTracks = document.querySelectorAll('.um-track--current');
+    for (var eqi = 0; eqi < eqTracks.length; eqi++) eqTracks[eqi].classList.toggle('um-paused', !snap.playing);
 
     shuffleBtn.classList.toggle('um-pb-btn--on', !!snap.shuffle);
     fullShuffleBtn.classList.toggle('um-pb-btn--on', !!snap.shuffle);
