@@ -16,7 +16,7 @@
  */
 'use strict';
 
-const CACHE_VERSION = 'um-shell-54d5aa02a8';
+const CACHE_VERSION = 'um-shell-e1a929bba7';
 const CACHE_PREFIX = 'um-shell-';
 const CACHE_NAME = CACHE_VERSION;
 

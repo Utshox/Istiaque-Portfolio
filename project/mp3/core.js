@@ -26,6 +26,11 @@
   /* ------------------------------------------------------------------ *
    * Platform & Device Detection
    * ------------------------------------------------------------------ */
+  /* Chrome/Edge fire beforeinstallprompt once the PWA is installable; keep it
+     for the Settings "Install app" button (Chrome's own menu still works too). */
+  window.addEventListener('beforeinstallprompt', function (e) { window.__umInstallPrompt = e; });
+  window.addEventListener('appinstalled', function () { window.__umInstallPrompt = null; });
+
   function isIOS() {
     if (typeof navigator === 'undefined') return false;
     var ua = navigator.userAgent || '';
