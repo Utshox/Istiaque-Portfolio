@@ -1684,6 +1684,7 @@
     lib: libState,
     loadLibrary: loadLibrary,
     loadCachedLibrary: loadCachedLibrary,
+    streamQuality: streamQuality,
     saveLibrary: saveLibrary,
     isLiked: isLiked,
     toggleLike: toggleLike,

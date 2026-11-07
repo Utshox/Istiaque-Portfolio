@@ -1757,6 +1757,20 @@
   player.on('track', function (t) {
     syncTrackUI(t);
 
+    /* Ask the server to look up the next two songs now, so Next and
+       auto-advance don't wait on YouTube (slow on the small VM). */
+    try {
+      var st = player.getState();
+      var ids = [];
+      for (var k = 1; k <= 2; k++) {
+        var nt = st.queue[st.index + k];
+        if (nt && nt.id) ids.push(nt.id);
+      }
+      if (ids.length) {
+        UM.req('/api/prefetch', { method: 'POST', body: { ids: ids, q: core.streamQuality() } }).catch(function () {});
+      }
+    } catch (e) {}
+
     /* Auto-open desktop right panel on wide screens on initial play */
     if (t && window.innerWidth >= 1200 && !state.hasAutoOpenedNow) {
       try {
