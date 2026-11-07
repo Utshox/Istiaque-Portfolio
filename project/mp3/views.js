@@ -784,6 +784,9 @@
    * VIEW: Playlist (upstream)
    * ==================================================================== */
   views.playlist = function (container, params) {
+    if (params && (params.isUserPlaylist || /^pl-\d/.test(params.id || ''))) {
+      return views.userPlaylist(container, params.id);
+    }
     var token = beginView();
     clearView(container);
     setPageTint(null, token);
