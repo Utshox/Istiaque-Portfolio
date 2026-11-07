@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>UTSHOW Music</title>
+  <meta name="description" content="UTSHOW Music — personal music player for YouTube Music." />
+
+  <!-- Theme / PWA -->
+  <meta name="theme-color" content="#050C1C" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="application-name" content="UTSHOW" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="UTSHOW" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <!-- Icons / manifest (sibling-relative so GitHub Pages subpath works) -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+  />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div id="app" class="um-app"></div>
+
+  <noscript>
+    <div style="padding:32px;font-family:Inter,system-ui,sans-serif;color:#BAC7DB;background:#050C1C;min-height:100vh">
+      UTSHOW Music needs JavaScript enabled.
+    </div>
+  </noscript>
+
+  <!-- Classic scripts, all defer, in the required order. -->
+  <script src="config.js" defer></script>
+  <script src="player.js" defer></script>
+  <script src="core.js" defer></script>
+  <script src="views.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>

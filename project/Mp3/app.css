@@ -1,0 +1,4780 @@
+/*
+ * UTSHOW Music (web) — app.css
+ * Desktop & mobile music app stylesheet. Layout: top bar above three rounded panels
+ * (library / centre router view / now playing) with 8px gaps on a near-black frame,
+ * plus a fixed player bar at bottom. Mobile layout (<=700px): compact header, full-width
+ * content, mini player with thin progress bar, bottom navigation with safe-area support,
+ * and a full-screen Now Playing modal sheet with Up next / Lyrics tabs.
+ *
+ * ---------------------------------------------------------------------------------
+ * CLASS INDEX
+ * ---------------------------------------------------------------------------------
+ * SHELL / LAYOUT
+ *   .um-app                     root flex column, owns layout CSS vars & state flags
+ *   .um-app--lib-collapsed      library panel shrunk to 72px icon rail
+ *   .um-app--lib-open           mobile overlay state for left library panel
+ *   .um-app--now-open           displays right now-playing panel and reserves column
+ *   .um-topbar                  64px top bar, 3-part flex row
+ *   .um-topbar-left             logo cluster
+ *   .um-logo                    logo link wrapper
+ *   .um-logo-mark               34px rounded brand square with note glyph
+ *   .um-topbar-center           home button + search pill group
+ *   .um-home-btn                round home button
+ *   .um-search-pill             wide rounded search field
+ *   .um-search-pill-icon        magnifier inside the pill
+ *   .um-search-pill-input       the actual text input
+ *   .um-topbar-actions          settings, avatar, mobile icons cluster
+ *   .um-icon-btn                round ghost icon button
+ *   .um-icon-btn--on            toggled/active icon button (accent)
+ *   .um-avatar                  34px round avatar with initial
+ *   .um-main                    panel grid layout (2 or 3 columns)
+ *   .um-panel                   generic rounded panel shell
+ *   .um-panel--library          left "Your Library" panel
+ *   .um-panel--center           centre router view panel
+ *   .um-panel--now              right "Now playing" panel
+ *   .um-resizer                 drag handle on library panel edge
+ *   .um-scroll                  thin custom scrollbar container
+ *
+ * MOBILE NAV & MINI-PLAYER (<=700px)
+ *   .um-bnav                    bottom navigation bar (Home / Search / Library)
+ *   .um-bnav-item               individual bottom nav tab
+ *   .um-bnav-item--active       active bottom nav tab
+ *   .um-mini-progress           thin progress line on top of mini player
+ *   .um-mini-progress-fill      progress line fill
+ *
+ * LEFT PANEL — LIBRARY
+ *   .um-lib-head                header row: title + create + collapse
+ *   .um-lib-title               "Your Library" label
+ *   .um-lib-create              "+ Create" button
+ *   .um-lib-filters             Playlists / Albums / Artists pill row
+ *   .um-pill                    neutral pill (filter chips)
+ *   .um-pill--active            white pill with dark text
+ *   .um-lib-tools               search icon + "Recents" sort toggle row
+ *   .um-lib-sort                sort toggle button
+ *   .um-lib-list                scrollable list of library rows
+ *   .um-lib-row                 48px-art row, hover surface
+ *   .um-lib-row--active         currently open playlist/album row
+ *   .um-lib-row-art             48px square art tile
+ *   .um-lib-row-art--liked      gradient heart tile
+ *   .um-lib-row-text            two-line text stack
+ *   .um-lib-row-title           row title
+ *   .um-lib-row-sub             muted row subline
+ *
+ * CENTRE PANEL — VIEWS
+ *   .um-view                    scrolling page container
+ *   .um-view-tint               soft top gradient tinted by page art colour
+ *   .um-hero                    album/playlist/artist header block
+ *   .um-hero-art                large hero artwork with shadow
+ *   .um-hero-info               title/meta/actions column
+ *   .um-hero-eyebrow            small uppercase label above hero title
+ *   .um-hero-title              huge hero title
+ *   .um-hero-meta               year • tracks • duration line
+ *   .um-hero-actions            Play / Shuffle / Like row
+ *   .um-dot                     interpunct separator inside meta lines
+ *   .um-btn                     generic pill button
+ *   .um-btn--accent             accent filled primary button
+ *   .um-btn--ghost              outlined/ghost button
+ *   .um-btn--icon               circular icon-only button
+ *   .um-link                    inline accent text link (login/settings)
+ *   .um-section                 vertical section block
+ *   .um-section-head            section header row
+ *   .um-section-title           section heading
+ *   .um-section-sub             muted section subtitle
+ *   .um-section-all             "Show all" link button
+ *   .um-row                     horizontal card scroller
+ *   .um-grid                    responsive card grid
+ *   .um-shortcuts               2x4 grid of home shortcut tiles
+ *   .um-shortcut                shortcut tile (art flush left + title)
+ *   .um-shortcut-art            64px tile art
+ *   .um-shortcut-title          tile title (2-line clamp)
+ *   .um-shortcut-play           round accent play button on hover
+ *   .um-card                    generic 180px card
+ *   .um-card--mix               daily-mix card variant
+ *   .um-card--radio             radio station card variant
+ *   .um-card-artwrap            art wrapper that hosts the hover play button
+ *   .um-card-art                square artwork, 6px radius
+ *   .um-card-play               round accent play button over the art
+ *   .um-card-title              card title (2-line clamp)
+ *   .um-card-sub                muted card subline
+ *   .um-collage                 2x2 collage grid used by daily mixes
+ *   .um-collage-cell            one collage cell
+ *   .um-daily-label             small "Daily Mix" label bottom-left
+ *   .um-number-badge            big mix number bottom-right
+ *   .um-radio-art               circular artist art on radio cards
+ *   .um-radio-label             "RADIO" corner label
+ *   .um-chips                   mood/genre chip wrap
+ *   .um-chip                    mood/genre chip
+ *   .um-empty                   empty state block
+ *   .um-empty-icon              big muted glyph
+ *   .um-empty-title             empty state heading
+ *   .um-empty-text              empty state body copy
+ *
+ * TRACK LIST
+ *   .um-tracks                  track table container
+ *   .um-tracks--noart           album tracks variant (without artwork column)
+ *   .um-tracks--plain           plain variant
+ *   .um-track                   one song row (grid)
+ *   .um-track--current          currently playing row
+ *   .um-track-idx               index / equalizer cell
+ *   .um-track-art               small row artwork
+ *   .um-track-main              title + artists stack
+ *   .um-track-title             row title
+ *   .um-track-sub               row subline (artists)
+ *   .um-track-artists           artist link text
+ *   .um-track-album             album column (hidden on narrow)
+ *   .um-track-time              duration cell (tabular)
+ *   .um-track-actions           heart + more cluster
+ *   .um-eq                      3-bar animated equalizer
+ *   .um-eq-bar                  single equalizer bar
+ *   .um-like                    heart button
+ *   .um-like--on                liked heart (accent)
+ *   .um-paused                  stops equalizer animation
+ *
+ * SEARCH
+ *   .um-search-page             search results page wrapper
+ *   .um-search-tabs             All / Songs / Albums … tab row
+ *   .um-tab                     one tab
+ *   .um-tab--active             selected tab
+ *   .um-suggest                 suggestion dropdown
+ *   .um-suggest-item            one suggestion row
+ *   .um-suggest-item--active    keyboard-highlighted suggestion
+ *   .um-topresult               "Top result" card wrapper
+ *   .um-topresult-card          big top-result surface
+ *   .um-topresult-art           top-result artwork
+ *   .um-topresult-meta          text stack inside top result
+ *
+ * PLAYER BAR
+ *   .um-playerbar               fixed 84px bottom bar (mini player on phones)
+ *   .um-pb-left                 art + title/artist + like
+ *   .um-pb-art                  mini now-playing art
+ *   .um-pb-meta                 title/artist stack
+ *   .um-pb-title                track title button
+ *   .um-pb-artist               artist link button
+ *   .um-pb-center               controls + seek column
+ *   .um-pb-controls             shuffle / prev / play / next / repeat row
+ *   .um-pb-btn                  small round transport button
+ *   .um-pb-btn--on              enabled shuffle/repeat state
+ *   .um-pb-play                 44px accent play/pause button
+ *   .um-pb-play--needs-gesture  pulsing play button while waiting for a user gesture
+ *   .um-pb-seek                 seek row (time + range + time)
+ *   .um-pb-time                 tabular time label
+ *   .um-pb-right                volume + queue + lyrics cluster
+ *   .um-pb-vol                  volume slider + mute button
+ *   .um-spinner                 buffering spinner
+ *
+ * NOW PLAYING PANEL (DESKTOP)
+ *   .um-np-head                 panel header with source name
+ *   .um-np-source               "Playing from …" label
+ *   .um-np-body                 scroll body of the panel
+ *   .um-np-art                  large rounded artwork
+ *   .um-np-row                  title/artist + like row
+ *   .um-np-text                 title + artist stack inside that row
+ *   .um-np-title                big track title
+ *   .um-np-artist               artist line
+ *   .um-np-card                 generic inner card inside the panel
+ *   .um-np-card--link           clickable variant of inner card
+ *   .um-np-card-head            head label for cards inside the panel
+ *   .um-np-lyrics               lyrics preview card (warm tinted)
+ *   .um-np-lyrics-content       lyrics preview line container
+ *   .um-np-lyric-line           one preview lyric line
+ *   .um-np-lyric-line--now      active/highlighted preview line
+ *   .um-np-lyrics-empty         "No lyrics" mini state
+ *   .um-np-about                about-the-artist card
+ *   .um-np-about-banner         artist banner image
+ *   .um-np-about-name           artist name over the banner
+ *   .um-np-about-foot           footer copy under the banner
+ *   .um-np-next                 next-in-queue card
+ *   .um-np-next-row             one next-up row
+ *   .um-np-next-text            title + artist stack inside a next-up row
+ *
+ * NOW PLAYING OVERLAY / LYRICS / PHONE SHEET
+ *   .um-overlay                 fixed full-screen overlay root
+ *   .um-overlay-panel           blurred panel inside the overlay
+ *   .um-overlay-close           round close button top-right
+ *   .um-sheet-grip              swipe-down handle (phones only)
+ *   .um-npfull                  two-column overlay grid (one column <=900px)
+ *   .um-npfull-art              artwork display
+ *   .um-npfull-side             right column (bounded scroller)
+ *   .um-npfull-title            overlay title
+ *   .um-npfull-artist           overlay artist
+ *   .um-npfull-controls         overlay transport row
+ *   .um-np-tabs                 segmented Up next / Lyrics switch (phone sheet)
+ *   .um-np-tab                  one sheet tab
+ *   .um-np-tab--active          selected sheet tab
+ *   .um-np-pane                 one sheet tab pane
+ *   .um-np-pane--hidden         hidden sheet tab pane
+ *   .um-lyrics                  scrolling lyrics container
+ *   .um-lyrics-line             one lyric line (clickable to seek)
+ *   .um-lyrics-line--active     active synced line
+ *   .um-lyrics-plain            plain (unsynced) lyrics block
+ *   .um-lyrics-empty            no-lyrics empty state
+ *
+ * QUEUE DRAWER
+ *   .um-queue                   sliding drawer over the right panel
+ *   .um-queue-head              drawer header
+ *   .um-queue-list              drawer scroll list
+ *   .um-queue-row               one queued track row
+ *   .um-queue-row--active       currently playing queued row
+ *   .um-queue-row-art           queued row art
+ *   .um-queue-row-text          queued row text stack
+ *
+ * AUTH & LOGIN (REMOTE ACCESS / ACCOUNTS)
+ *   .um-login-scrim             fullscreen backdrop for auth screen
+ *   .um-login-card              centered authentication card
+ *   .um-login-logo              auth card brand icon
+ *   .um-login-title             auth card title
+ *   .um-login-sub               auth card description
+ *   .um-login-form              auth form inputs & submit
+ *   .um-login-field             label + input wrapper
+ *   .um-login-label             form label
+ *   .um-login-input             auth text/password input
+ *   .um-login-btn               submit button
+ *   .um-login-error             auth failure message
+ *   .um-login-alt               invite / register block revealed in the card
+ *   .um-login-switch            "Have an invite?" toggle line
+ *   .um-login-note              small muted footnote under the form
+ *
+ * SETTINGS
+ *   .um-settings                settings stack container
+ *   .um-settings-section        grouped settings block
+ *   .um-settings-title          block heading
+ *   .um-settings-sub            block description
+ *   .um-settings-row            label + control row (>=44px tall)
+ *   .um-settings-label          row label
+ *   .um-settings-hint           muted helper text under the label
+ *   .um-settings-value          numeric/current value display
+ *   .um-settings-actions        button cluster inside a block
+ *   .um-settings-user           signed-in user summary row
+ *   .um-install-hint            "Install app" one-line hint box
+ *
+ * USERS / INVITES (ADMIN)
+ *   .um-users                   users list container
+ *   .um-user-row                one user row
+ *   .um-user-avatar             round initial avatar
+ *   .um-user-text               name + meta stack
+ *   .um-user-name               user display name
+ *   .um-user-meta               created / plays / last seen line
+ *   .um-badge                   small pill badge (admin etc.)
+ *   .um-invite                  invite box wrapper
+ *   .um-invite-code             monospace invite code with copy slot
+ *   .um-invite-link             full invite link line
+ *   .um-invite-actions          copy / create buttons
+ *
+ * RECOMMENDER STATS VIEW
+ *   .um-stats                   statistics container
+ *   .um-stats-grid              kpi card grid
+ *   .um-stats-card              metric summary card
+ *   .um-stats-card-val          large numeric value
+ *   .um-stats-card-lbl          metric title
+ *   .um-stats-chart-wrap        wrapper for SVG chart
+ *   .um-stats-chart             inline SVG chart container
+ *   .um-stats-chart-label       axis/caption text under the chart
+ *   .um-stats-weights           weight comparison bars container
+ *   .um-stats-weight-row        single weight row
+ *   .um-stats-weight-name       feature name
+ *   .um-stats-weight-val        numeric weight at the end of the row
+ *   .um-stats-bar-track         background track for weight bar
+ *   .um-stats-bar-fill          current weight bar fill
+ *   .um-stats-bar-prior         prior weight marker
+ *   .um-stats-list              simple label/value list (top artists)
+ *   .um-stats-listrow           one list row
+ *   .um-stats-empty             muted "no data yet" line
+ *
+ * MENUS / DIALOGS / TOASTS
+ *   .um-menu                    floating context menu (bottom sheet on phones)
+ *   .um-menu-item               one menu entry
+ *   .um-menu-item--danger       destructive entry
+ *   .um-menu-sep                divider line
+ *   .um-menu-label              non-interactive menu group label
+ *   .um-dialog-scrim            full-screen dim behind a dialog
+ *   .um-dialog                  dialog panel
+ *   .um-dialog-title            dialog heading
+ *   .um-dialog-text             dialog body copy
+ *   .um-dialog-input            dialog text input
+ *   .um-dialog-actions          right-aligned button row
+ *   .um-toasts                  toast stack container
+ *   .um-toast                   one toast
+ *   .um-toast--error            error-tinted toast
+ *   .um-toast--update           "new version available" toast
+ *   .um-toast-action            inline action button inside a toast
+ *
+ * SKELETONS / RANGE / UTILITIES
+ *   .um-skel                    shimmer base
+ *   .um-skel-line               shimmer text line
+ *   .um-skel-line--sm           small shimmer line
+ *   .um-skel-line--md           medium shimmer line
+ *   .um-skel-card               shimmer card block
+ *   .um-skel-art                shimmer square art
+ *   .um-skel-tile               shimmer shortcut tile
+ *   .um-range                   custom range input (accent fill)
+ *   .um-range--sm               slim variant (volume)
+ *   .um-hidden                  display:none
+ *   .um-clamp2                  2-line clamp
+ *   .um-ellipsis                single-line ellipsis
+ *   .um-mt8 / .um-mt16          spacing helpers
+ *   .um-img-fallback            gradient + note placeholder for broken images
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Brand colors */
+  --frame: #02060F;
+  --bg: #050C1C;
+  --surface: #0D1A30;
+  --surface-2: #16274A;
+  --surface-hover: #1B3157;
+  --accent: #4AA8FF;
+  --accent-2: #1F6FE0;
+  --text: #FFFFFF;
+  --text-2: #BAC7DB;
+  --text-3: #7D8BA5;
+  --error: #FF6B6B;
+  --focus: #FFFFFF;
+
+  --radius: 8px;
+  --radius-sm: 6px;
+  --pill: 999px;
+
+  --um-lib-w: 300px;
+  --um-now-w: 340px;
+
+  --um-ease: cubic-bezier(.2, .7, .3, 1);
+  --um-fast: 140ms var(--um-ease);
+  --um-med: 220ms var(--um-ease);
+
+  --um-tint: rgba(74, 168, 255, .16);
+  --um-tint-warm: rgba(255, 176, 92, .16);
+
+  --um-shadow-1: 0 6px 18px rgba(0, 0, 0, .38);
+  --um-shadow-2: 0 18px 48px rgba(0, 0, 0, .62);
+  --um-shadow-3: 0 28px 80px rgba(0, 0, 0, .72);
+
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+/* ------------------------------------------------------------------ reset */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--frame);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: rgba(74, 168, 255, .35);
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ------------------------------------------------------------ scrollbars */
+
+.um-scroll,
+.um-lib-list,
+.um-view,
+.um-queue-list,
+.um-lyrics,
+.um-suggest,
+.um-menu,
+.um-stats,
+.um-np-body,
+.um-settings,
+.um-npfull-side,
+.um-npfull {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .18) transparent;
+}
+
+.um-scroll::-webkit-scrollbar,
+.um-lib-list::-webkit-scrollbar,
+.um-view::-webkit-scrollbar,
+.um-queue-list::-webkit-scrollbar,
+.um-lyrics::-webkit-scrollbar,
+.um-suggest::-webkit-scrollbar,
+.um-menu::-webkit-scrollbar,
+.um-stats::-webkit-scrollbar,
+.um-np-body::-webkit-scrollbar,
+.um-settings::-webkit-scrollbar,
+.um-npfull::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.um-scroll::-webkit-scrollbar-track,
+.um-lib-list::-webkit-scrollbar-track,
+.um-view::-webkit-scrollbar-track,
+.um-queue-list::-webkit-scrollbar-track,
+.um-lyrics::-webkit-scrollbar-track,
+.um-suggest::-webkit-scrollbar-track,
+.um-menu::-webkit-scrollbar-track,
+.um-stats::-webkit-scrollbar-track,
+.um-np-body::-webkit-scrollbar-track,
+.um-settings::-webkit-scrollbar-track,
+.um-npfull::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.um-scroll::-webkit-scrollbar-thumb,
+.um-lib-list::-webkit-scrollbar-thumb,
+.um-view::-webkit-scrollbar-thumb,
+.um-queue-list::-webkit-scrollbar-thumb,
+.um-lyrics::-webkit-scrollbar-thumb,
+.um-suggest::-webkit-scrollbar-thumb,
+.um-menu::-webkit-scrollbar-thumb,
+.um-stats::-webkit-scrollbar-thumb,
+.um-np-body::-webkit-scrollbar-thumb,
+.um-settings::-webkit-scrollbar-thumb,
+.um-npfull::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .14);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.um-scroll:hover::-webkit-scrollbar-thumb,
+.um-lib-list:hover::-webkit-scrollbar-thumb,
+.um-view:hover::-webkit-scrollbar-thumb,
+.um-queue-list:hover::-webkit-scrollbar-thumb,
+.um-lyrics:hover::-webkit-scrollbar-thumb,
+.um-np-body:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .26);
+  background-clip: content-box;
+}
+
+/* ============================================================ shell / app */
+
+.um-app {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--frame);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- topbar */
+
+.um-topbar {
+  flex: 0 0 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px 0;
+  min-width: 0;
+  z-index: 50;
+}
+
+.um-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.um-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--radius);
+}
+
+.um-logo-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #04101F;
+  box-shadow: 0 6px 18px rgba(31, 111, 224, .45);
+  flex: 0 0 auto;
+}
+
+.um-logo-mark svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+
+.um-topbar-center {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  min-width: 0;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.um-home-btn {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  color: var(--text-2);
+  transition: background var(--um-fast), color var(--um-fast), transform var(--um-fast);
+}
+
+.um-home-btn svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.um-home-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  transform: scale(1.04);
+}
+
+.um-home-btn:active {
+  transform: scale(.96);
+}
+
+.um-search-pill {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px 0 16px;
+  border-radius: var(--pill);
+  background: var(--surface);
+  border: 1px solid transparent;
+  transition: background var(--um-fast), border-color var(--um-fast), box-shadow var(--um-fast);
+}
+
+.um-search-pill:hover {
+  background: var(--surface-2);
+}
+
+.um-search-pill:focus-within {
+  background: var(--surface-2);
+  border-color: rgba(255, 255, 255, .18);
+  box-shadow: 0 0 0 3px rgba(74, 168, 255, .12);
+}
+
+.um-search-pill-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: var(--text-2);
+}
+
+.um-search-pill-icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.um-search-pill-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: .01em;
+}
+
+.um-search-pill-input::placeholder {
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.um-topbar-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.um-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  color: var(--text-2);
+  background: transparent;
+  transition: background var(--um-fast), color var(--um-fast), transform var(--um-fast);
+}
+
+.um-icon-btn svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+
+.um-icon-btn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.um-icon-btn:active {
+  transform: scale(.94);
+}
+
+.um-icon-btn--on {
+  color: var(--accent);
+}
+
+.um-icon-btn--on:hover {
+  color: var(--accent);
+  background: rgba(74, 168, 255, .14);
+}
+
+.um-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, var(--surface-2), var(--surface));
+  border: 1px solid rgba(255, 255, 255, .14);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .02em;
+  transition: transform var(--um-fast), border-color var(--um-fast);
+}
+
+.um-avatar:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, .3);
+}
+
+/* ------------------------------------------------------------ main grid */
+
+.um-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--um-lib-w) minmax(0, 1fr);
+  gap: 8px;
+  padding: 8px;
+  padding-top: 0;
+  transition: grid-template-columns var(--um-med);
+}
+
+.um-app--lib-collapsed .um-main {
+  --um-lib-w: 72px;
+}
+
+/* Desktop default: right panel hidden, 2-column layout. */
+/* .um-app--now-open restores the third column + shows the panel. */
+.um-panel--now {
+  display: none;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 42%, var(--bg) 100%);
+}
+
+.um-app--now-open .um-main {
+  grid-template-columns: var(--um-lib-w) minmax(0, 1fr) var(--um-now-w);
+}
+
+.um-app--now-open .um-panel--now {
+  display: flex;
+}
+
+.um-panel {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.um-panel--library {
+  overflow: visible;
+}
+
+.um-panel--center {
+  overflow: hidden;
+}
+
+.um-resizer {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  right: -5px;
+  width: 10px;
+  cursor: col-resize;
+  z-index: 20;
+  border-radius: 6px;
+  transition: background var(--um-fast);
+}
+
+.um-resizer::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .1);
+  transition: background var(--um-fast);
+}
+
+.um-resizer:hover::after,
+.um-resizer:active::after {
+  background: rgba(255, 255, 255, .4);
+}
+
+/* ======================================================= left panel: lib */
+
+.um-lib-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 12px 8px 18px;
+}
+
+.um-lib-title {
+  flex: 1 1 auto;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.um-lib-title svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--text-2);
+}
+
+.um-lib-create {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--pill);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background var(--um-fast), color var(--um-fast);
+}
+
+.um-lib-create svg {
+  width: 16px;
+  height: 16px;
+}
+
+.um-lib-create:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.um-lib-filters {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  padding: 4px 16px 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.um-lib-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.um-pill {
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 13px;
+  border-radius: var(--pill);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  transition: background var(--um-fast), color var(--um-fast), transform var(--um-fast);
+}
+
+.um-pill:hover {
+  background: var(--surface-hover);
+}
+
+.um-pill:active {
+  transform: scale(.97);
+}
+
+.um-pill--active {
+  background: var(--text);
+  color: #06101F;
+}
+
+.um-pill--active:hover {
+  background: #fff;
+}
+
+.um-lib-tools {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 14px 8px 18px;
+}
+
+.um-lib-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--pill);
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: background var(--um-fast), color var(--um-fast);
+}
+
+.um-lib-sort svg {
+  width: 15px;
+  height: 15px;
+}
+
+.um-lib-sort:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.um-lib-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px 8px 16px;
+  overscroll-behavior: contain;
+}
+
+.um-lib-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  transition: background var(--um-fast);
+}
+
+.um-lib-row:hover {
+  background: var(--surface);
+}
+
+.um-lib-row--active {
+  background: var(--surface-2);
+}
+
+.um-lib-row-art {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-2);
+  position: relative;
+}
+
+.um-lib-row-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-lib-row-art--liked {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #6FC3FF 0%, var(--accent-2) 55%, #0B3C86 100%);
+  color: #fff;
+}
+
+.um-lib-row-art--liked svg {
+  width: 22px;
+  height: 22px;
+}
+
+.um-lib-row-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.um-lib-row-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-lib-row--active .um-lib-row-title {
+  color: var(--accent);
+}
+
+.um-lib-row-sub {
+  font-size: 12.5px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* collapsed icon rail */
+.um-app--lib-collapsed .um-lib-title,
+.um-app--lib-collapsed .um-lib-create,
+.um-app--lib-collapsed .um-lib-filters,
+.um-app--lib-collapsed .um-lib-tools,
+.um-app--lib-collapsed .um-lib-row-text {
+  display: none;
+}
+
+.um-app--lib-collapsed .um-lib-head {
+  padding: 14px 0 8px;
+  justify-content: center;
+}
+
+.um-app--lib-collapsed .um-lib-list {
+  padding: 2px 8px 16px;
+}
+
+.um-app--lib-collapsed .um-lib-row {
+  justify-content: center;
+  padding: 6px;
+}
+
+/* ==================================================== centre panel: view */
+
+.um-view {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 0 40px;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+.um-view-tint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 340px;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 100% at 20% 0%, var(--um-tint) 0%, transparent 62%),
+    linear-gradient(180deg, var(--um-tint) 0%, transparent 100%);
+  opacity: .95;
+  transition: background var(--um-med);
+  z-index: 0;
+}
+
+.um-view > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* hero (album / playlist / artist header) */
+.um-hero {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 32px 28px 24px;
+}
+
+.um-hero-art {
+  flex: 0 0 auto;
+  width: 224px;
+  height: 224px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: var(--um-shadow-2);
+}
+
+.um-hero-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-hero-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 6px;
+}
+
+.um-hero-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.um-hero-title {
+  margin: 0;
+  font-size: clamp(30px, 4.4vw, 56px);
+  line-height: 1.06;
+  font-weight: 700;
+  letter-spacing: -.028em;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.um-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.um-hero-meta strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.um-dot {
+  color: var(--text-3);
+}
+
+.um-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* buttons */
+.um-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--pill);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  transition: background var(--um-fast), color var(--um-fast), transform var(--um-fast), border-color var(--um-fast);
+}
+
+.um-btn svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.um-btn:active {
+  transform: scale(.97);
+}
+
+.um-btn--accent {
+  background: var(--accent);
+  color: #04101F;
+  box-shadow: 0 8px 22px rgba(74, 168, 255, .26);
+}
+
+.um-btn--accent:hover {
+  background: #6DB8FF;
+}
+
+.um-btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, .22);
+}
+
+.um-btn--ghost:hover {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 255, 255, .42);
+}
+
+.um-btn--icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-2);
+}
+
+.um-btn--icon:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, .08);
+}
+
+.um-btn--icon.um-like--on {
+  color: var(--accent);
+}
+
+.um-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.um-link:hover {
+  text-decoration: underline;
+}
+
+/* sections */
+.um-section {
+  padding: 18px 28px 6px;
+}
+
+.um-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.um-section-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--text);
+}
+
+.um-section-sub {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.um-section-all {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  padding: 6px 10px;
+  border-radius: var(--pill);
+  transition: color var(--um-fast), background var(--um-fast);
+}
+
+.um-section-all:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+/* horizontal card row */
+.um-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 28px 10px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.um-row::-webkit-scrollbar {
+  height: 10px;
+}
+
+.um-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.um-row::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+.um-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 16px;
+  padding: 0 28px;
+}
+
+.um-grid .um-card {
+  width: 100%;
+}
+
+/* shortcut grid (home) */
+.um-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 28px;
+}
+
+.um-shortcut {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  overflow: hidden;
+  text-align: left;
+  padding-right: 56px;
+  transition: background var(--um-fast), transform var(--um-fast);
+}
+
+.um-shortcut:hover {
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.um-shortcut-art {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.um-shortcut-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-shortcut-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.um-shortcut-play {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) scale(.86);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #04101F;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .45);
+  transition: opacity var(--um-fast), transform var(--um-fast);
+}
+
+.um-shortcut-play svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+}
+
+.um-shortcut:hover .um-shortcut-play,
+.um-shortcut:focus-visible .um-shortcut-play {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+  pointer-events: auto;
+}
+
+/* cards */
+.um-card {
+  flex: 0 0 auto;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: transparent;
+  text-align: left;
+  scroll-snap-align: start;
+  transition: background var(--um-fast), transform var(--um-fast);
+}
+
+.um-card:hover {
+  background: var(--surface);
+}
+
+.um-card-artwrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .35);
+}
+
+/* Direct images (with or without .um-card-art) must fill the square wrapper */
+.um-card-artwrap > img,
+.um-card-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--um-med);
+}
+
+.um-card:hover .um-card-artwrap > img,
+.um-card:hover .um-card-art {
+  transform: scale(1.03);
+}
+
+.um-card-play {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #04101F;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .5);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--um-fast), transform var(--um-fast), background var(--um-fast);
+}
+
+.um-card-play svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+}
+
+.um-card:hover .um-card-play,
+.um-card:focus-within .um-card-play {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.um-card-play:hover {
+  background: #6DB8FF;
+}
+
+.um-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.um-card-sub {
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--text-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* daily mix collage cards */
+.um-card--mix .um-card-artwrap {
+  overflow: hidden;
+}
+
+.um-collage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  width: 100%;
+  height: 100%;
+  gap: 0;
+  background: var(--surface-2);
+}
+
+.um-collage-cell {
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.um-collage-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.um-daily-label {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .92);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, .7);
+  pointer-events: none;
+}
+
+.um-number-badge {
+  position: absolute;
+  right: 12px;
+  bottom: 2px;
+  font-size: 46px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -.04em;
+  color: rgba(255, 255, 255, .92);
+  text-shadow: 0 6px 22px rgba(0, 0, 0, .7), 0 1px 3px rgba(0, 0, 0, .6);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.um-card--mix:hover .um-number-badge {
+  color: #fff;
+}
+
+/* radio station cards */
+.um-card--radio .um-card-artwrap {
+  border-radius: var(--radius);
+  background: linear-gradient(150deg, var(--accent-2) 0%, #0B2B5C 60%, var(--surface) 100%);
+  display: grid;
+  place-items: center;
+}
+
+.um-card--radio .um-card-artwrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(80% 70% at 50% 40%, rgba(255, 255, 255, .16), transparent 70%);
+  pointer-events: none;
+}
+
+.um-radio-art {
+  width: 66%;
+  height: 66%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .5);
+  position: relative;
+  z-index: 1;
+}
+
+.um-radio-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-radio-label {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: rgba(255, 255, 255, .78);
+  z-index: 2;
+}
+
+/* chips (moods / genres) */
+.um-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 28px 8px;
+}
+
+.um-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--pill);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background var(--um-fast), transform var(--um-fast);
+}
+
+.um-chip:hover {
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+/* empty state */
+.um-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 56px 32px;
+  color: var(--text-2);
+}
+
+.um-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  color: var(--text-2);
+  margin-bottom: 4px;
+}
+
+.um-empty-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.um-empty-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.um-empty-text {
+  font-size: 13.5px;
+  max-width: 420px;
+  color: var(--text-2);
+}
+
+/* ============================================================ track list */
+
+.um-tracks {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 16px 20px;
+}
+
+.um-track {
+  display: grid;
+  grid-template-columns: 34px 40px minmax(0, 2.2fr) minmax(0, 1.4fr) 58px 76px;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  cursor: default;
+  transition: background var(--um-fast);
+  user-select: none;
+}
+
+.um-tracks--plain .um-track {
+  grid-template-columns: 34px 40px minmax(0, 2.2fr) minmax(0, 1.4fr) 58px 76px;
+}
+
+.um-tracks--noart .um-track {
+  grid-template-columns: 34px minmax(0, 2.2fr) minmax(0, 1.4fr) 58px 76px;
+}
+
+.um-track:hover {
+  background: rgba(255, 255, 255, .05);
+}
+
+.um-track--current {
+  background: rgba(74, 168, 255, .08);
+}
+
+.um-track--current:hover {
+  background: rgba(74, 168, 255, .12);
+}
+
+.um-track-idx {
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+  height: 100%;
+}
+
+.um-track:hover .um-track-idx {
+  color: var(--text-2);
+}
+
+.um-track-art {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.um-track-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-track-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.um-track-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-track--current .um-track-title {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.um-track-sub {
+  font-size: 12.5px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-track-artists {
+  color: var(--text-2);
+}
+
+.um-track-artists:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.um-track-album {
+  font-size: 12.5px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-track-album:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.um-track-time {
+  font-size: 12.5px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.um-track-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--um-fast);
+}
+
+.um-track:hover .um-track-actions,
+.um-track:focus-within .um-track-actions,
+.um-track--current .um-track-actions {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .um-track-actions {
+    opacity: 1 !important;
+  }
+}
+
+.um-like {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--text-3);
+  transition: color var(--um-fast), background var(--um-fast), transform var(--um-fast);
+}
+
+.um-like svg {
+  width: 17px;
+  height: 17px;
+}
+
+.um-like:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, .08);
+  transform: scale(1.06);
+}
+
+.um-like--on {
+  color: var(--accent);
+}
+
+.um-like--on:hover {
+  color: var(--accent);
+}
+
+.um-like--on svg {
+  fill: currentColor;
+}
+
+/* equalizer */
+.um-eq {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2.5px;
+  width: 100%;
+  height: 100%;
+}
+
+.um-eq-bar {
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform-origin: bottom center;
+  animation: um-eq 900ms ease-in-out infinite;
+}
+
+.um-eq-bar:nth-child(2) {
+  animation-duration: 720ms;
+  animation-delay: -160ms;
+}
+
+.um-eq-bar:nth-child(3) {
+  animation-duration: 1040ms;
+  animation-delay: -320ms;
+}
+
+@keyframes um-eq {
+  0%, 100% { transform: scaleY(.28); }
+  30% { transform: scaleY(1); }
+  60% { transform: scaleY(.5); }
+}
+
+.um-track--current .um-eq {
+  animation-play-state: running;
+}
+
+.um-track--current.um-paused .um-eq-bar {
+  animation-play-state: paused;
+}
+
+/* ================================================================ search */
+
+.um-search-page {
+  padding: 8px 0 24px;
+}
+
+.um-search-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 4px 28px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.um-search-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.um-tab {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--pill);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background var(--um-fast), color var(--um-fast);
+}
+
+.um-tab:hover {
+  background: var(--surface-hover);
+}
+
+.um-tab--active {
+  background: var(--text);
+  color: #06101F;
+}
+
+.um-tab--active:hover {
+  background: #fff;
+}
+
+.um-suggest {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: var(--um-shadow-2);
+}
+
+.um-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-suggest-item svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  color: var(--text-3);
+}
+
+.um-suggest-item--active,
+.um-suggest-item:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.um-topresult {
+  padding: 0 28px;
+  margin-bottom: 8px;
+}
+
+.um-topresult-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 260px;
+  padding: 20px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: left;
+  transition: background var(--um-fast), transform var(--um-fast);
+}
+
+.um-topresult-card:hover {
+  background: var(--surface-hover);
+  transform: translateY(-2px);
+}
+
+.um-topresult-art {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+}
+
+.um-topresult-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-topresult-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.um-topresult-meta .um-card-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* ============================================================= player bar */
+
+.um-playerbar {
+  flex: 0 0 84px;
+  height: 84px;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(320px, 2fr) minmax(180px, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  background: var(--surface);
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  flex-shrink: 0;
+  z-index: 70;
+}
+
+.um-pb-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.um-pb-art {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-2);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .4);
+}
+
+.um-pb-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-pb-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.um-pb-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  max-width: 100%;
+}
+
+.um-pb-title:hover {
+  text-decoration: underline;
+}
+
+.um-pb-artist {
+  font-size: 12px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  max-width: 100%;
+}
+
+.um-pb-artist:empty {
+  display: none;
+}
+
+.um-pb-artist:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.um-pb-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+}
+
+.um-pb-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.um-pb-btn {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text-2);
+  transition: color var(--um-fast), background var(--um-fast), transform var(--um-fast);
+}
+
+.um-pb-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.um-pb-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, .08);
+}
+
+.um-pb-btn:active {
+  transform: scale(.94);
+}
+
+.um-pb-btn--on {
+  color: var(--accent);
+}
+
+.um-pb-btn--on:hover {
+  color: var(--accent);
+  background: rgba(74, 168, 255, .14);
+}
+
+.um-pb-btn--on::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.um-pb-play {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #04101F;
+  box-shadow: 0 8px 22px rgba(74, 168, 255, .3);
+  transition: transform var(--um-fast), background var(--um-fast), box-shadow var(--um-fast);
+}
+
+.um-pb-play svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.um-pb-play:hover {
+  transform: scale(1.06);
+  background: #6DB8FF;
+}
+
+.um-pb-play:active {
+  transform: scale(.96);
+}
+
+/* autoplay policy: waiting for a user gesture */
+.um-pb-play--needs-gesture {
+  animation: um-pulse 1.8s var(--um-ease) infinite;
+}
+
+@keyframes um-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(74, 168, 255, .5), 0 8px 22px rgba(74, 168, 255, .3);
+  }
+  55% {
+    box-shadow: 0 0 0 12px rgba(74, 168, 255, 0), 0 8px 22px rgba(74, 168, 255, .3);
+  }
+}
+
+.um-pb-seek {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.um-pb-time {
+  font-size: 11.5px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .02em;
+}
+
+.um-pb-time:first-child {
+  text-align: right;
+}
+
+.um-pb-time:last-child {
+  text-align: left;
+}
+
+.um-pb-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 0;
+}
+
+.um-pb-vol {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 132px;
+}
+
+/* buffering spinner */
+.um-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(4, 16, 31, .28);
+  border-top-color: #04101F;
+  animation: um-spin 700ms linear infinite;
+}
+
+@keyframes um-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ================================================================ ranges */
+
+.um-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  --um-fill: 0%;
+}
+
+.um-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--accent) 0 var(--um-fill, 0%),
+    rgba(255, 255, 255, .16) var(--um-fill, 0%) 100%
+  );
+}
+
+.um-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .55);
+  opacity: 0;
+  transition: opacity var(--um-fast), transform var(--um-fast);
+}
+
+.um-range:hover::-webkit-slider-thumb,
+.um-range:focus-visible::-webkit-slider-thumb {
+  opacity: 1;
+}
+
+.um-range:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+.um-range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .16);
+}
+
+.um-range::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.um-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .55);
+  opacity: 0;
+  transition: opacity var(--um-fast);
+}
+
+.um-range:hover::-moz-range-thumb,
+.um-range:focus-visible::-moz-range-thumb {
+  opacity: 1;
+}
+
+.um-range--sm {
+  height: 20px;
+}
+
+.um-range--sm::-webkit-slider-runnable-track {
+  height: 3px;
+}
+
+.um-range--sm::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  margin-top: -3.5px;
+}
+
+.um-range--sm::-moz-range-track {
+  height: 3px;
+}
+
+.um-range--sm::-moz-range-progress {
+  height: 3px;
+}
+
+.um-range--sm::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+}
+
+/* ====================================================== right panel: now */
+
+.um-np-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 16px 8px 20px;
+}
+
+.um-np-source {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  letter-spacing: .01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-np-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overscroll-behavior: contain;
+}
+
+.um-np-art {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: var(--um-shadow-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.um-np-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-np-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.um-np-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.um-np-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.um-np-title:hover {
+  text-decoration: underline;
+}
+
+.um-np-artist {
+  font-size: 13.5px;
+  color: var(--text-2);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.um-np-artist:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.um-np-card {
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  flex: 0 0 auto;
+  transition: background var(--um-fast), transform var(--um-fast);
+}
+
+.um-np-card--link:hover {
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.um-np-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* lyrics preview (warm tinted) */
+.um-np-lyrics {
+  border-radius: var(--radius);
+  padding: 16px;
+  background:
+    radial-gradient(120% 120% at 0% 0%, var(--um-tint-warm) 0%, transparent 70%),
+    linear-gradient(160deg, #2A1B10 0%, #17110C 100%);
+  border: 1px solid rgba(255, 176, 92, .12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  text-align: left;
+  transition: transform var(--um-fast), border-color var(--um-fast);
+}
+
+.um-np-lyrics:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 176, 92, .28);
+}
+
+.um-np-lyrics-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* preview lyrics use the shared .um-lyrics-plain block, restyled scoped */
+.um-np-lyrics .um-lyrics-plain {
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: rgba(255, 236, 216, .82);
+  padding: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+
+.um-np-lyric-line {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 235, 214, .5);
+  transition: color var(--um-fast);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.um-np-lyric-line--now {
+  color: #FFF3E4;
+  font-weight: 700;
+  font-size: 16.5px;
+}
+
+.um-np-lyrics-empty {
+  font-size: 13px;
+  color: rgba(255, 235, 214, .55);
+}
+
+/* about the artist */
+.um-np-about {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  text-align: left;
+  flex: 0 0 auto;
+  transition: background var(--um-fast), transform var(--um-fast);
+}
+
+.um-np-about:hover {
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.um-np-about-banner {
+  position: relative;
+  height: 110px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.um-np-about-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--um-med);
+}
+
+.um-np-about:hover .um-np-about-banner img {
+  transform: scale(1.04);
+}
+
+.um-np-about-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 30%, rgba(5, 12, 28, .92) 100%);
+}
+
+.um-np-about-name {
+  position: absolute;
+  left: 14px;
+  bottom: 10px;
+  z-index: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .6);
+}
+
+.um-np-about-foot {
+  padding: 10px 14px 12px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+/* next in queue */
+.um-np-next {
+  padding: 12px 14px 14px;
+  gap: 8px;
+}
+
+.um-np-next-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 2px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  transition: background var(--um-fast);
+}
+
+.um-np-next-row:hover {
+  background: rgba(255, 255, 255, .05);
+}
+
+.um-np-next-row img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--surface-2);
+  flex: 0 0 auto;
+}
+
+.um-np-next-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.um-np-next-text .um-card-title {
+  font-size: 13px;
+}
+
+.um-np-next-text .um-card-sub {
+  font-size: 11.5px;
+  -webkit-line-clamp: 1;
+}
+
+/* ================================================================ overlay */
+
+.um-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 0;
+  background: rgba(2, 6, 15, .72);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  animation: um-fade-in 180ms var(--um-ease);
+}
+
+@keyframes um-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.um-overlay-panel {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0;
+  padding: 32px 40px 40px;
+  background: linear-gradient(180deg, rgba(13, 26, 48, .92) 0%, rgba(5, 12, 28, .98) 100%);
+  overflow: hidden;
+}
+
+.um-overlay-close {
+  position: absolute;
+  top: 22px;
+  right: 26px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .08);
+  color: var(--text);
+  z-index: 5;
+  transition: background var(--um-fast), transform var(--um-fast);
+}
+
+.um-overlay-close svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.um-overlay-close:hover {
+  background: rgba(255, 255, 255, .18);
+  transform: scale(1.05);
+}
+
+/* swipe-down handle: phones only */
+.um-sheet-grip {
+  display: none;
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .26);
+  margin: 0 auto 10px;
+  flex: 0 0 auto;
+}
+
+/* Two-column overlay grid. The grid row is bounded by the panel height, and
+   the side column is a stretch item so the lyrics get a real scroller. */
+.um-npfull {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 48px;
+  align-items: stretch;
+  padding: 20px 40px;
+  overflow: hidden;
+}
+
+.um-npfull-art {
+  align-self: center;
+  justify-self: center;
+  height: 100%;
+  max-height: min(100%, 460px);
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: var(--um-shadow-3);
+}
+
+.um-npfull-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Constrained column so lyrics scroll within the panel */
+.um-npfull-side {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+}
+
+.um-npfull-title {
+  flex: 0 0 auto;
+  font-size: clamp(24px, 2.6vw, 38px);
+  font-weight: 700;
+  letter-spacing: -.025em;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.um-npfull-artist {
+  flex: 0 0 auto;
+  font-size: 16px;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.um-npfull-controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.um-npfull-controls .um-pb-btn {
+  width: 44px;
+  height: 44px;
+}
+
+.um-npfull-controls .um-pb-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.um-npfull-controls .um-pb-play {
+  width: 60px;
+  height: 60px;
+}
+
+.um-npfull-controls .um-pb-play svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* phone sheet tabs: Up next | Lyrics */
+.um-np-tabs {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: var(--pill);
+  background: rgba(255, 255, 255, .06);
+}
+
+.um-np-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 44px;
+  border-radius: var(--pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  transition: background var(--um-fast), color var(--um-fast);
+}
+
+.um-np-tab--active {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.um-np-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.um-np-pane--hidden {
+  display: none;
+}
+
+/* lyrics scroller */
+.um-lyrics {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 20px 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overscroll-behavior: contain;
+  mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 88%, transparent 100%);
+}
+
+.um-lyrics-line {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -.015em;
+  color: rgba(255, 255, 255, .34);
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  flex: 0 0 auto;
+  transition: color var(--um-med), transform var(--um-med), background var(--um-fast);
+  transform-origin: left center;
+  overflow-wrap: anywhere;
+}
+
+.um-lyrics-line:hover {
+  color: rgba(255, 255, 255, .7);
+}
+
+.um-lyrics-line--active {
+  color: var(--text);
+  transform: scale(1.03);
+}
+
+.um-lyrics-plain {
+  font-size: 18px;
+  line-height: 1.7;
+  font-weight: 600;
+  color: rgba(255, 255, 255, .82);
+  white-space: pre-wrap;
+  padding: 8px 4px;
+  overflow-wrap: anywhere;
+}
+
+.um-lyrics-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  color: var(--text-2);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* =========================================================== queue drawer */
+
+.um-queue {
+  position: fixed;
+  top: 72px;
+  right: 8px;
+  bottom: 92px;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--um-shadow-3);
+  border: 1px solid rgba(255, 255, 255, .06);
+  transform: translateX(calc(100% + 16px));
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--um-med), opacity var(--um-med);
+}
+
+.um-queue--open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.um-queue-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 14px 10px 18px;
+}
+
+.um-queue-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+.um-queue-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overscroll-behavior: contain;
+}
+
+.um-queue-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  transition: background var(--um-fast);
+}
+
+.um-queue-row:hover {
+  background: rgba(255, 255, 255, .06);
+}
+
+.um-queue-row--active {
+  background: rgba(74, 168, 255, .12);
+}
+
+.um-queue-row-art {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.um-queue-row-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.um-queue-row-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.um-queue-row-text .um-card-title {
+  font-size: 13px;
+}
+
+.um-queue-row-text .um-card-sub {
+  font-size: 11.5px;
+  -webkit-line-clamp: 1;
+}
+
+.um-queue-row--active .um-card-title {
+  color: var(--accent);
+}
+
+/* ================================================= auth / accounts / login */
+
+.um-login-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  padding-top: calc(20px + var(--safe-top));
+  padding-bottom: calc(20px + var(--safe-bottom));
+  overflow-y: auto;
+  background: var(--frame);
+  animation: um-fade-in 200ms var(--um-ease);
+}
+
+.um-login-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 32px 28px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: var(--um-shadow-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.um-login-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #04101F;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(31, 111, 224, .4);
+  flex: 0 0 auto;
+}
+
+.um-login-logo svg {
+  width: 26px;
+  height: 26px;
+}
+
+.um-login-title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.um-login-sub {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.um-login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.um-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.um-login-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.um-login-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, .12);
+  color: var(--text);
+  font-size: 16px;
+  transition: border-color var(--um-fast), box-shadow var(--um-fast);
+}
+
+.um-login-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(74, 168, 255, .16);
+}
+
+.um-login-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--pill);
+  background: var(--accent);
+  color: #04101F;
+  font-size: 14px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 22px rgba(74, 168, 255, .3);
+  margin-top: 8px;
+  transition: background var(--um-fast), transform var(--um-fast);
+}
+
+.um-login-btn:hover {
+  background: #6DB8FF;
+}
+
+.um-login-btn:active {
+  transform: scale(.98);
+}
+
+.um-login-error {
+  color: var(--error);
+  font-size: 13px;
+  text-align: center;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+
+.um-login-alt {
+  width: 100%;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.um-login-switch {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--text-2);
+  text-align: center;
+}
+
+.um-login-note {
+  margin: 12px 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-3);
+  text-align: center;
+}
+
+/* ================================================================ settings */
+
+.um-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0 24px;
+}
+
+.um-settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, .06);
+}
+
+.um-settings-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: var(--text);
+}
+
+.um-settings-sub {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.um-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 44px;
+}
+
+.um-settings-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.um-settings-hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.um-settings-value {
+  font-size: 13px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.um-settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.um-settings-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.um-install-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(74, 168, 255, .1);
+  border: 1px solid rgba(74, 168, 255, .22);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-2);
+  text-align: left;
+}
+
+.um-install-hint svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+
+/* ========================================================= users / invites */
+
+.um-users {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.um-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 6px 6px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  transition: background var(--um-fast);
+}
+
+.um-user-row:hover {
+  background: rgba(255, 255, 255, .05);
+}
+
+.um-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, var(--surface-2), var(--surface));
+  border: 1px solid rgba(255, 255, 255, .12);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.um-user-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.um-user-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-user-meta {
+  font-size: 11.5px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.um-badge {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: var(--pill);
+  background: rgba(74, 168, 255, .16);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.um-invite {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.um-invite-code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px dashed rgba(255, 255, 255, .18);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 16px;
+  letter-spacing: .14em;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.um-invite-link {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-2);
+  word-break: break-all;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.um-invite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ========================================= recommender stats & evaluation */
+
+.um-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0 24px;
+  max-height: 72vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.um-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.um-stats-card {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, .06);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.um-stats-card-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.um-stats-card-lbl {
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.um-stats-chart-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.um-stats-chart {
+  width: 100%;
+  height: 140px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, .06);
+  overflow: hidden;
+}
+
+.um-stats-chart svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.um-stats-chart-label {
+  font-size: 11.5px;
+  color: var(--text-3);
+  letter-spacing: .02em;
+}
+
+.um-stats-weights {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.um-stats-weight-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.um-stats-weight-name {
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-stats-weight-val {
+  text-align: right;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.um-stats-bar-track {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  overflow: hidden;
+}
+
+.um-stats-bar-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.um-stats-bar-prior {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  width: 2px;
+  background: #FFF;
+  z-index: 2;
+}
+
+.um-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.um-stats-listrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.um-stats-empty {
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+/* ==================================================== menus / dialogs / toast */
+
+.um-menu {
+  position: fixed;
+  z-index: 300;
+  min-width: 220px;
+  max-width: 300px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 6px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: var(--um-shadow-2);
+  animation: um-pop 140ms var(--um-ease);
+  overscroll-behavior: contain;
+}
+
+@keyframes um-pop {
+  from { opacity: 0; transform: translateY(-4px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.um-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background var(--um-fast), color var(--um-fast);
+}
+
+.um-menu-item svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--text-3);
+}
+
+.um-menu-item:hover {
+  background: rgba(255, 255, 255, .08);
+  color: var(--text);
+}
+
+.um-menu-item:hover svg {
+  color: var(--text);
+}
+
+.um-menu-item--danger {
+  color: var(--error);
+}
+
+.um-menu-item--danger:hover {
+  background: rgba(255, 107, 107, .14);
+  color: var(--error);
+}
+
+.um-menu-item--danger svg {
+  color: var(--error);
+}
+
+.um-menu-sep {
+  height: 1px;
+  margin: 5px 8px;
+  background: rgba(255, 255, 255, .08);
+}
+
+.um-menu-label {
+  padding: 8px 10px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* dialogs */
+.um-dialog-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 320;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(2, 6, 15, .72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: um-fade-in 140ms var(--um-ease);
+}
+
+.um-dialog {
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  padding: 24px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: var(--um-shadow-3);
+  animation: um-pop 180ms var(--um-ease);
+}
+
+.um-dialog-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+
+.um-dialog-text {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.um-dialog-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, .12);
+  color: var(--text);
+  font-size: 16px;
+  margin-bottom: 18px;
+  transition: border-color var(--um-fast), box-shadow var(--um-fast);
+}
+
+.um-dialog-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(74, 168, 255, .16);
+}
+
+.um-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* toasts */
+.um-toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 100px;
+  transform: translateX(-50%);
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.um-toast {
+  pointer-events: auto;
+  padding: 12px 18px;
+  border-radius: var(--pill);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--um-shadow-2);
+  border: 1px solid rgba(255, 255, 255, .08);
+  animation: um-toast-in 220ms var(--um-ease);
+  max-width: 420px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.um-toast--error {
+  background: #2A1114;
+  color: #FFC9C9;
+  border-color: rgba(255, 107, 107, .34);
+}
+
+.um-toast--update {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 18px;
+  border-radius: var(--pill);
+  background: var(--accent-2);
+  color: #FFF;
+  border-color: transparent;
+  text-align: left;
+}
+
+.um-toast-action {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--pill);
+  background: #FFF;
+  color: #04101F;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.um-toast-action:hover {
+  background: #E6F2FF;
+}
+
+@keyframes um-toast-in {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ============================================================== skeletons */
+
+.um-skel {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+
+.um-skel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, .07) 45%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: um-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes um-shimmer {
+  to { transform: translateX(100%); }
+}
+
+.um-skel-line {
+  height: 12px;
+  border-radius: 999px;
+  margin: 6px 0;
+}
+
+.um-skel-line--sm {
+  width: 45%;
+}
+
+.um-skel-line--md {
+  width: 70%;
+}
+
+.um-skel-card {
+  width: 180px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.um-skel-art {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+}
+
+.um-skel-tile {
+  height: 64px;
+  border-radius: var(--radius-sm);
+}
+
+/* ================================================================ helpers */
+
+.um-hidden {
+  display: none !important;
+}
+
+.um-clamp2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.um-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.um-mt8 {
+  margin-top: 8px;
+}
+
+.um-mt16 {
+  margin-top: 16px;
+}
+
+/* image fallback placeholder */
+.um-img-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, var(--surface-2) 0%, var(--surface) 100%);
+  color: var(--text-3);
+}
+
+.um-img-fallback svg {
+  width: 40%;
+  height: 40%;
+  max-width: 40px;
+  max-height: 40px;
+}
+
+/* touch devices: never hide primary play affordances behind hover */
+@media (hover: none) {
+  .um-card-play,
+  .um-shortcut-play {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .um-card-play {
+    transform: translateY(0);
+  }
+
+  .um-shortcut-play {
+    transform: translateY(-50%) scale(1);
+  }
+
+  /* Touch hit areas & Discoverability */
+  .um-like,
+  .um-icon-btn,
+  .um-pb-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .um-menu-item {
+    min-height: 44px;
+    height: auto;
+    padding: 6px 12px;
+  }
+
+  .um-pill,
+  .um-tab {
+    min-height: 36px;
+    padding: 0 16px;
+  }
+
+  .um-range,
+  .um-range--sm {
+    height: 44px;
+  }
+
+  .um-range::-webkit-slider-thumb,
+  .um-range--sm::-webkit-slider-thumb {
+    opacity: 1;
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+  }
+
+  .um-range::-moz-range-thumb,
+  .um-range--sm::-moz-range-thumb {
+    opacity: 1;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ============================================================= responsive */
+
+@media (max-width: 1400px) {
+  .um-shortcuts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1200px) {
+  .um-hero {
+    gap: 20px;
+    padding: 26px 22px 20px;
+  }
+
+  .um-hero-art {
+    width: 180px;
+    height: 180px;
+  }
+
+  .um-section {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .um-row {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .um-grid {
+    padding: 0 22px;
+  }
+
+  .um-shortcuts {
+    padding: 0 22px;
+  }
+
+  .um-chips {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .um-tracks {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .um-topresult {
+    padding: 0 22px;
+  }
+
+  .um-search-tabs {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .um-npfull {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 32px;
+    padding: 12px 20px;
+  }
+
+  .um-overlay-panel {
+    padding: 24px 24px 32px;
+  }
+}
+
+/* 701px to 1100px: left panel collapsed to icons, right panel hidden */
+@media (max-width: 1100px) {
+  .um-app {
+    --um-lib-w: 72px;
+  }
+
+  .um-main,
+  .um-app--now-open .um-main {
+    grid-template-columns: var(--um-lib-w) minmax(0, 1fr) !important;
+  }
+
+  .um-panel--now {
+    display: none !important;
+  }
+
+  .um-app .um-lib-title,
+  .um-app .um-lib-create,
+  .um-app .um-lib-filters,
+  .um-app .um-lib-tools,
+  .um-app .um-lib-row-text {
+    display: none;
+  }
+
+  .um-app .um-lib-head {
+    padding: 14px 0 8px;
+    justify-content: center;
+  }
+
+  .um-app .um-lib-list {
+    padding: 2px 8px 16px;
+  }
+
+  .um-app .um-lib-row {
+    justify-content: center;
+    padding: 6px;
+  }
+
+  .um-resizer {
+    display: none;
+  }
+
+  /* Prevent iOS Safari 16px zoom bug on iPad / tablet touch widths */
+  .um-search-pill-input {
+    font-size: 16px;
+  }
+
+  .um-dialog-input {
+    font-size: 16px;
+  }
+
+  .um-pb-left .um-pb-meta {
+    max-width: 140px;
+  }
+
+  .um-playerbar {
+    grid-template-columns: minmax(140px, 1fr) minmax(280px, 2fr) minmax(120px, 1fr);
+  }
+
+  .um-pb-vol {
+    width: 96px;
+  }
+}
+
+@media (max-width: 900px) {
+  .um-shortcuts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .um-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .um-hero-art {
+    width: 148px;
+    height: 148px;
+  }
+
+  .um-grid {
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  }
+
+  .um-card {
+    width: 156px;
+  }
+
+  /* Single-column overlay: keep lyrics in a bounded scroll container so auto-scroll works */
+  .um-npfull {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 16px;
+    align-items: stretch;
+    overflow: hidden;
+    padding: 12px 12px 24px;
+  }
+
+  .um-npfull-art {
+    height: auto;
+    width: min(100%, 220px);
+    max-height: none;
+    margin: 0 auto;
+  }
+
+  .um-npfull-side {
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    align-self: stretch;
+    overflow: hidden;
+  }
+
+  .um-lyrics {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: 80px;
+  }
+}
+
+/* ==================================================== phone layout (<=700px) */
+
+@media (max-width: 700px) {
+  .um-topbar {
+    gap: 8px;
+    padding: 6px 10px 0;
+    padding-top: calc(6px + var(--safe-top));
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 56px;
+  }
+
+  .um-logo-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+  }
+
+  .um-topbar-center {
+    gap: 6px;
+    max-width: none;
+  }
+
+  .um-home-btn {
+    display: none;
+  }
+
+  .um-search-pill {
+    height: 44px;
+    padding-left: 12px;
+  }
+
+  .um-search-pill-input {
+    font-size: 16px; /* Prevents iOS auto-zoom */
+  }
+
+  .um-icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .um-icon-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .um-topbar-actions .um-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .um-main,
+  .um-app--now-open .um-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0;
+    padding: 0;
+  }
+
+  .um-panel--library {
+    position: fixed;
+    top: calc(56px + var(--safe-top));
+    left: 6px;
+    bottom: calc(140px + var(--safe-bottom));
+    width: 288px;
+    max-width: calc(100vw - 12px);
+    z-index: 95;
+    display: none;
+    box-shadow: var(--um-shadow-3);
+    border: 1px solid rgba(255, 255, 255, .06);
+  }
+
+  .um-app--lib-open .um-panel--library {
+    display: flex;
+  }
+
+  .um-app--lib-open .um-lib-title,
+  .um-app--lib-open .um-lib-create,
+  .um-app--lib-open .um-lib-filters,
+  .um-app--lib-open .um-lib-tools,
+  .um-app--lib-open .um-lib-row-text {
+    display: flex;
+  }
+
+  .um-app--lib-open .um-lib-head {
+    padding: 14px 12px 8px 18px;
+    justify-content: flex-start;
+  }
+
+  .um-app--lib-open .um-lib-row {
+    justify-content: flex-start;
+    padding: 6px 8px;
+  }
+
+  .um-panel--now {
+    display: none !important;
+  }
+
+  .um-view {
+    padding: 0 0 calc(140px + var(--safe-bottom));
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .um-view-tint {
+    height: 220px;
+  }
+
+  /* Track row on phone: index · art · title+sub · duration · actions (>=44px touch targets) */
+  .um-track {
+    grid-template-columns: 24px 40px minmax(0, 1fr) 48px 88px;
+    gap: 8px;
+    height: 56px;
+    padding: 0 6px;
+  }
+
+  .um-track-album {
+    display: none;
+  }
+
+  .um-tracks {
+    padding: 4px 8px 16px;
+  }
+
+  .um-tracks--plain .um-track {
+    grid-template-columns: 24px 40px minmax(0, 1fr) 48px 88px;
+  }
+
+  /* Album row on phone (no art): index · title+sub · duration · actions */
+  .um-tracks--noart .um-track {
+    grid-template-columns: 24px minmax(0, 1fr) 48px 88px;
+  }
+
+  .um-track-actions {
+    gap: 0;
+    opacity: 1;
+  }
+
+  .um-track .um-like,
+  .um-track .um-icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .um-hero {
+    padding: 20px 16px 16px;
+    gap: 14px;
+  }
+
+  .um-hero-art {
+    width: 132px;
+    height: 132px;
+  }
+
+  .um-hero-title {
+    font-size: clamp(26px, 8vw, 36px);
+  }
+
+  .um-hero-actions {
+    gap: 8px;
+  }
+
+  .um-btn {
+    height: 44px;
+    padding: 0 16px;
+  }
+
+  .um-section {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 14px;
+  }
+
+  .um-section-title {
+    font-size: 19px;
+  }
+
+  .um-section-all {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .um-row {
+    padding-left: 16px;
+    padding-right: 16px;
+    gap: 12px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .um-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .um-grid {
+    padding: 0 16px;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .um-shortcuts {
+    padding: 0 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .um-shortcut {
+    height: 56px;
+    gap: 10px;
+    padding-right: 48px;
+  }
+
+  .um-shortcut-art {
+    width: 56px;
+    height: 56px;
+  }
+
+  .um-shortcut-title {
+    font-size: 12px;
+  }
+
+  .um-shortcut-play {
+    width: 44px;
+    height: 44px;
+    right: 2px;
+  }
+
+  .um-chips {
+    padding-left: 16px;
+    padding-right: 16px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .um-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .um-chip {
+    flex: 0 0 auto;
+    height: 44px;
+    padding: 0 16px;
+  }
+
+  .um-topresult {
+    padding: 0 16px;
+  }
+
+  .um-search-tabs {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .um-tab {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .um-pill {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .um-topresult-card {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .um-card {
+    width: 144px;
+    padding: 8px;
+  }
+
+  .um-skel-card {
+    width: 144px;
+  }
+
+  .um-card-play {
+    width: 44px;
+    height: 44px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  /* ---------------- Mobile mini player ---------------- */
+  .um-playerbar {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(56px + var(--safe-bottom) + 8px);
+    height: 60px;
+    flex: 0 0 60px;
+    border-radius: var(--radius);
+    padding: 0 8px;
+    background: var(--surface-2);
+    border: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: var(--um-shadow-2);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+    overflow: hidden;
+  }
+
+  .um-pb-left {
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .um-pb-art {
+    width: 44px;
+    height: 44px;
+  }
+
+  .um-pb-meta {
+    gap: 0;
+  }
+
+  .um-pb-title {
+    font-size: 13px;
+  }
+
+  .um-pb-artist {
+    font-size: 11.5px;
+  }
+
+  .um-pb-left .um-like {
+    display: none;
+  }
+
+  .um-pb-center {
+    width: auto;
+    gap: 0;
+  }
+
+  .um-pb-seek {
+    display: none;
+  }
+
+  .um-pb-controls {
+    gap: 2px;
+  }
+
+  .um-pb-controls .um-pb-btn {
+    display: none;
+  }
+
+  .um-pb-controls .um-pb-btn[title="Next"],
+  .um-pb-controls .um-pb-btn[aria-label="Next"] {
+    display: grid;
+    width: 44px;
+    height: 44px;
+  }
+
+  .um-pb-controls .um-pb-play {
+    width: 44px;
+    height: 44px;
+  }
+
+  .um-pb-controls .um-pb-play svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .um-pb-right {
+    display: none;
+  }
+
+  /* Thin progress bar for mobile mini player */
+  .um-mini-progress {
+    position: absolute;
+    top: 0;
+    left: 6px;
+    right: 6px;
+    height: 2px;
+    background: rgba(255, 255, 255, .15);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .um-mini-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 200ms linear;
+  }
+
+  /* ---------------- Mobile bottom navigation ---------------- */
+  .um-bnav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(56px + var(--safe-bottom));
+    padding-bottom: var(--safe-bottom);
+    background: rgba(5, 12, 28, .96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, .06);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 95;
+  }
+
+  .um-bnav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--text-2);
+    font-size: 11px;
+    font-weight: 600;
+    width: 76px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    transition: color var(--um-fast);
+  }
+
+  .um-bnav-item svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .um-bnav-item--active {
+    color: var(--text);
+  }
+
+  /* ---------------- Full-screen Now Playing sheet ---------------- */
+  .um-overlay {
+    align-items: stretch;
+    padding: 0;
+    background: var(--bg);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .um-overlay-panel {
+    padding: calc(10px + var(--safe-top)) 16px calc(14px + var(--safe-bottom));
+    border-radius: 0;
+    background: linear-gradient(180deg, rgba(13, 26, 48, .98) 0%, rgba(5, 12, 28, 1) 100%);
+  }
+
+  .um-overlay-close {
+    top: calc(8px + var(--safe-top));
+    right: 12px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .um-sheet-grip {
+    display: block;
+  }
+
+  .um-npfull {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 14px;
+    align-items: stretch;
+    padding: 16px 0 8px;
+    overflow: hidden;
+  }
+
+  .um-npfull-art {
+    width: min(72vw, 240px);
+    height: auto;
+    max-height: none;
+    margin: 0 auto;
+    border-radius: 12px;
+  }
+
+  .um-npfull-side {
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+    align-self: stretch;
+    overflow: hidden;
+    gap: 12px;
+  }
+
+  .um-npfull-title {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .um-npfull-artist {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  /* Responsively spaced transport row that fits even 320px screens */
+  .um-npfull-controls {
+    justify-content: center;
+    gap: clamp(4px, 2.5vw, 16px);
+    margin-top: 2px;
+  }
+
+  .um-npfull-controls .um-pb-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .um-npfull-controls .um-pb-play {
+    width: 58px;
+    height: 58px;
+  }
+
+  .um-np-tabs {
+    margin-top: 2px;
+  }
+
+  .um-np-tab {
+    height: 44px;
+  }
+
+  /* Bounded scroller so auto-scroll moves the view as music plays */
+  .um-lyrics {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px 6px calc(24px + var(--safe-bottom));
+    mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 90%, transparent 100%);
+  }
+
+  .um-lyrics-line {
+    font-size: 18px;
+    padding: 8px 4px;
+  }
+
+  .um-lyrics-plain {
+    font-size: 16px;
+  }
+
+  /* ---------------- Menus as bottom sheets ---------------- */
+  .um-menu {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(12px + var(--safe-bottom)) !important;
+    top: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: 75vh;
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: var(--um-shadow-3);
+  }
+
+  .um-menu-item {
+    min-height: 46px;
+    font-size: 15px;
+  }
+
+  .um-menu-label {
+    padding-top: 10px;
+  }
+
+  /* ---------------- Dialogs ---------------- */
+  .um-dialog-scrim {
+    padding: 16px;
+    padding-bottom: calc(16px + var(--safe-bottom));
+  }
+
+  .um-dialog {
+    padding: 20px;
+    max-height: calc(100dvh - 40px);
+  }
+
+  .um-dialog-input {
+    font-size: 16px;
+  }
+
+  .um-dialog-actions .um-btn {
+    flex: 1 1 auto;
+    height: 44px;
+  }
+
+  /* ---------------- Queue drawer positioned above mobile mini player ---------------- */
+  .um-queue {
+    top: calc(56px + var(--safe-top));
+    right: 6px;
+    left: 6px;
+    bottom: calc(128px + var(--safe-bottom));
+    width: auto;
+    max-width: none;
+  }
+
+  .um-queue-row {
+    padding: 8px;
+    min-height: 56px;
+  }
+
+  /* ---------------- Toasts ---------------- */
+  .um-toasts {
+    bottom: calc(136px + var(--safe-bottom));
+    left: 12px;
+    right: 12px;
+    transform: none;
+    align-items: stretch;
+  }
+
+  .um-toast {
+    max-width: none;
+    font-size: 13px;
+  }
+
+  /* ---------------- Login / settings / stats on phone ---------------- */
+  .um-login-card {
+    padding: 26px 20px;
+    max-width: 100%;
+  }
+
+  .um-settings-section {
+    padding: 14px 14px;
+  }
+
+  .um-settings-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .um-settings-value {
+    text-align: left;
+  }
+
+  .um-settings-actions .um-btn {
+    height: 44px;
+  }
+
+  .um-stats {
+    max-height: none;
+  }
+
+  .um-stats-chart {
+    height: 120px;
+  }
+
+  .um-stats-weight-row {
+    grid-template-columns: 96px minmax(0, 1fr) 46px;
+    font-size: 11.5px;
+  }
+
+  .um-invite-code {
+    font-size: 14px;
+    letter-spacing: .1em;
+  }
+
+  .um-suggest {
+    max-height: 58vh;
+  }
+
+  .um-suggest-item {
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Captain patch 11-07: cascade fixes found in live testing.
+   - .um-panel (display:flex) is declared after .um-panel--now and re-showed the
+     closed right panel, which then wrapped into a second grid row.
+   - Phone-only pieces (bottom nav, mini progress line) leaked onto desktop.
+   - Added active styling for the desktop "Now playing view" toggle button.
+   ------------------------------------------------------------------------ */
+.um-app:not(.um-app--now-open) .um-panel--now { display: none !important; }
+@media (min-width: 701px) {
+  .um-bnav,
+  .um-mini-progress { display: none !important; }
+}
+
+.um-app--now-open .um-icon-btn[title*="Now playing"],
+.um-app--now-open .um-icon-btn[aria-label*="Now playing"] {
+  color: var(--accent);
+}
