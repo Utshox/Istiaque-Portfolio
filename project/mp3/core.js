@@ -436,6 +436,10 @@
     if (tokenUsed && !headers['Authorization']) {
       headers['Authorization'] = 'Bearer ' + tokenUsed;
     }
+    /* Local timezone for the time-of-day mix and weather (no GPS prompt). */
+    if (!headers['X-UM-TZ']) {
+      try { headers['X-UM-TZ'] = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    }
 
     var body = opts.body;
     if (body && typeof body === 'object' && !(body instanceof FormData)) {
@@ -1535,7 +1539,8 @@
   function mixCard(mix, n) {
     mix = mix || {};
     var isDaily = mix.id && mix.id.indexOf('daily-') === 0;
-    var num = n != null ? String(n) : (isDaily ? mix.id.replace('daily-', '') : '');
+    var isDaylist = mix.id === 'daylist';
+    var num = isDaily ? mix.id.replace('daily-', '') : (n != null ? String(n) : '');
     if (num.length === 1) num = '0' + num;
 
     var covers = mix.covers || [];
@@ -1555,6 +1560,10 @@
     if (isDaily) {
       artWrap.appendChild(h('div', { className: 'um-daily-label', text: 'Daily Mix' }));
       artWrap.appendChild(h('div', { className: 'um-number-badge', text: num }));
+    }
+    if (isDaylist) {
+      artWrap.appendChild(h('div', { className: 'um-daylist-tint' }));
+      artWrap.appendChild(h('div', { className: 'um-daily-label um-daylist-label', text: 'daylist' }));
     }
 
     function start() {

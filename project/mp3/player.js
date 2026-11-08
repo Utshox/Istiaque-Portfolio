@@ -1462,6 +1462,15 @@
     if (!state.playing) play();
   }
 
+  /* Swipe-right on the mini player: always the previous song (no restart-first rule). */
+  function prevTrack() {
+    continuationGen++;
+    if (state.index > 0) { startIndex(state.index - 1, { reason: 'skip' }); return; }
+    if (state.repeat === 'all' && state.queue.length > 1) { startIndex(state.queue.length - 1, { reason: 'skip' }); return; }
+    seek(0);
+    if (!state.playing) play();
+  }
+
   function seek(sec) {
     var slot = activeSlot();
     if (!slot.track) return;
@@ -1781,6 +1790,7 @@
     pause: pause,
     next: next,
     prev: prev,
+    prevTrack: prevTrack,
     seek: seek,
     stop: stop,
 

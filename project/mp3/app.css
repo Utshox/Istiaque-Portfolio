@@ -4897,3 +4897,23 @@ img {
     background: var(--accent); clip-path: polygon(0 0, 100% 50%, 0 100%);
   }
 }
+
+/* Time-of-day "daylist" card: warm gradient wash over the collage + lowercase label */
+.um-daylist-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255, 140, 90, .45), rgba(120, 60, 200, .35) 55%, rgba(20, 20, 40, .2));
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+.um-daylist-label {
+  background: linear-gradient(90deg, #ff9a5a, #b06bff);
+  color: #fff;
+  text-transform: lowercase;
+  letter-spacing: .02em;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-shadow: none;
+}
+.um-pb-left { will-change: transform; touch-action: pan-y; }

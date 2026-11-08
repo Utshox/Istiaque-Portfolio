@@ -251,9 +251,11 @@
   mainGrid.appendChild(nowPanel);
 
   /* Bottom Player Bar */
+  var swipeSwallowClick = false;
   var playerBar = h('footer', {
     className: 'um-playerbar',
     onClick: function (e) {
+      if (swipeSwallowClick) { swipeSwallowClick = false; e.stopPropagation(); return; }
       if (ui.isPhone()) {
         if (e.target.closest('.um-pb-controls') || e.target.closest('.um-like')) return;
         openNowSheet('lyrics');
@@ -321,6 +323,54 @@
   pbLeft.appendChild(pbArt);
   pbLeft.appendChild(pbMeta);
   pbLeft.appendChild(pbLikeBtn);
+
+  /* Phone mini player: swipe the song left = next, right = previous (Spotify-style).
+   * Horizontal intent locks after 10px; vertical drags are left alone. */
+  (function attachMiniSwipe() {
+    var sx = 0, sy = 0, st = 0, dx = 0, lock = '', w = 1;
+    function setX(x, anim) {
+      pbLeft.style.transition = anim ? 'transform .22s ease, opacity .22s ease' : 'none';
+      pbLeft.style.transform = x ? 'translateX(' + x + 'px)' : '';
+      pbLeft.style.opacity = x ? String(Math.max(0.2, 1 - Math.abs(x) / w)) : '';
+    }
+    pbLeft.addEventListener('touchstart', function (e) {
+      if (!ui.isPhone() || e.touches.length !== 1 || !player.current()) return;
+      var t = e.touches[0];
+      sx = t.clientX; sy = t.clientY; st = Date.now(); dx = 0; lock = '';
+      w = pbLeft.offsetWidth || 300;
+    }, { passive: true });
+    pbLeft.addEventListener('touchmove', function (e) {
+      if (!st) return;
+      var t = e.touches[0], mx = t.clientX - sx, my = t.clientY - sy;
+      if (!lock) {
+        if (Math.abs(mx) < 10 && Math.abs(my) < 10) return;
+        lock = Math.abs(mx) > Math.abs(my) ? 'x' : 'y';
+      }
+      if (lock !== 'x') return;
+      if (e.cancelable) e.preventDefault();
+      dx = mx;
+      setX(dx, false);
+    }, { passive: false });
+    function end() {
+      if (!st) return;
+      var dt = Math.max(1, Date.now() - st), go = lock === 'x' && (Math.abs(dx) > w * 0.3 || (Math.abs(dx) > 40 && Math.abs(dx) / dt > 0.5));
+      st = 0;
+      if (lock !== 'x') return;
+      swipeSwallowClick = true;
+      setTimeout(function () { swipeSwallowClick = false; }, 400);
+      if (!go) { setX(0, true); return; }
+      var dir = dx < 0 ? -1 : 1;
+      setX(dir * w, true);
+      setTimeout(function () {
+        if (dir < 0) player.next(); else player.prevTrack();
+        setX(-dir * w * 0.6, false);
+        void pbLeft.offsetWidth;
+        setX(0, true);
+      }, 200);
+    }
+    pbLeft.addEventListener('touchend', end);
+    pbLeft.addEventListener('touchcancel', function () { if (st) { st = 0; setX(0, true); } });
+  })();
 
   /* Center: Transport + Seek */
   var pbCenter = h('div', { className: 'um-pb-center' });
