@@ -274,7 +274,54 @@
     };
   }
 
-  var slots = isIOS ? [createSlot('A')] : [createSlot('A'), createSlot('B')];
+  /* Two elements everywhere. On iOS the second one is only used by the
+     opt-in crossfade test; normal song changes stay on one element so
+     background playback keeps working. */
+  var slots = [createSlot('A'), createSlot('B')];
+
+  /* iOS ignores el.volume, so the iPhone crossfade test sends audio through
+     Web Audio gain nodes. Only switched on when crossfade > 0 on iOS. */
+  var actx = null;
+  function iosXfadeOn() { return isIOS && state.crossfade > 0; }
+  function ensureActx() {
+    if (actx) return actx;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try { actx = new AC(); } catch (e) { actx = null; }
+    return actx;
+  }
+  function resumeActx() {
+    if (actx && actx.state !== 'running') { try { actx.resume(); } catch (e) {} }
+  }
+  /* Must run before a new src is set (the media has to load with CORS). */
+  function routeSlot(slot) {
+    if (slot.gain || !iosXfadeOn()) return;
+    var ctx = ensureActx();
+    if (!ctx || ctx.state !== 'running') return;
+    try {
+      slot.el.crossOrigin = 'anonymous';
+      var src = ctx.createMediaElementSource(slot.el);
+      var g = ctx.createGain();
+      g.gain.value = state.volume;
+      src.connect(g);
+      g.connect(ctx.destination);
+      slot.gain = g;
+    } catch (e) {}
+  }
+  function setElVol(slot, v) {
+    v = clamp(num(v, 0), 0, 1);
+    if (slot.gain) {
+      try { slot.gain.gain.cancelScheduledValues(0); slot.gain.gain.value = v; } catch (e) {}
+      try { slot.el.volume = 1; } catch (e) {}
+    } else {
+      try { slot.el.volume = v; } catch (e) {}
+    }
+  }
+  function xfadeAllowed() {
+    if (!isIOS) return true;
+    return iosXfadeOn() && !document.hidden && !!actx && actx.state === 'running' && !!slots[active].gain;
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) resumeActx(); });
   var active = 0;
 
   function attachElements() {
@@ -400,11 +447,12 @@
     slot.prefetchFor = null;
 
     if (!canReuse) {
+      routeSlot(slot);
       try {
         slot.el.src = resolveStreamUrl(track.id, !!opts.bust, slot.token);
       } catch (e) {}
     }
-    slot.el.volume = (opts.volume != null) ? opts.volume : state.volume;
+    setElVol(slot, (opts.volume != null) ? opts.volume : state.volume);
     return gen;
   }
 
@@ -427,11 +475,12 @@
       slot.el.removeAttribute('src');
       slot.el.load();
     } catch (e) {}
-    slot.el.volume = state.volume;
+    setElVol(slot, state.volume);
   }
 
   function playSlot(slot, at, onReject) {
     var el = slot.el;
+    if (iosXfadeOn()) { ensureActx(); resumeActx(); }
     if (!el.getAttribute('src') && slot.track) {
       loadSlot(slot, slot.track, { auto: slot.auto });
     }
@@ -535,10 +584,10 @@
    * Dynamic Volume Crossfade Engine (Non-iOS Only)
    * ------------------------------------------------------------------ */
   function applyFadeVolumes(p) {
-    if (!xfade) return;
+    if (!xfade || xfade.ramped) return;
     var master = state.volume;
-    try { xfade.out.el.volume = clamp(master * (1 - p), 0, 1); } catch (e) {}
-    try { xfade.into.el.volume = clamp(master * p, 0, 1); } catch (e) {}
+    setElVol(xfade.out, master * (1 - p));
+    setElVol(xfade.into, master * p);
   }
 
   function fadeProgress() {
@@ -565,6 +614,17 @@
     xfade.started = true;
     xfade.elapsed = 0;
     xfade.lastTick = nowMs();
+    /* iOS gain path: schedule the fade on the audio clock so it still
+       finishes if timers get throttled. */
+    if (xfade.out.gain && xfade.into.gain && actx) {
+      try {
+        var t0 = actx.currentTime, d = xfade.durMs / 1000, m = state.volume;
+        var go = xfade.out.gain.gain, gi = xfade.into.gain.gain;
+        go.cancelScheduledValues(t0); go.setValueAtTime(go.value, t0); go.linearRampToValueAtTime(0, t0 + d);
+        gi.cancelScheduledValues(t0); gi.setValueAtTime(0, t0); gi.linearRampToValueAtTime(m, t0 + d);
+        xfade.ramped = true;
+      } catch (e) {}
+    }
     if (xfade.iv) clearInterval(xfade.iv);
     xfade.iv = setInterval(tickFade, 50);
   }
@@ -580,7 +640,7 @@
       if (x.out && x.out.track) {
         active = (slots[0] === x.out) ? 0 : 1;
         state.index = x.origIndex;
-        try { x.out.el.volume = state.volume; } catch (e) {}
+        setElVol(x.out, state.volume);
       }
       if (x.into) stopSlot(x.into);
       return;
@@ -592,7 +652,7 @@
       stopSlot(x.out);
     }
     if (x.into) {
-      try { x.into.el.volume = state.volume; } catch (e) {}
+      setElVol(x.into, state.volume);
       /* If the incoming element already ended during the fade, advance safely */
       if (x.into.el.ended && activeSlot() === x.into) {
         setTimeout(function () { advance(true); }, 20);
@@ -601,7 +661,7 @@
   }
 
   function beginCrossfade(outSlot, nextIdx) {
-    if (isIOS || slots.length < 2) return;
+    if (!xfadeAllowed()) return;
     var track = state.queue[nextIdx];
     if (!track || !track.id) return;
     if (xfade) finishCrossfade('ended');
@@ -649,7 +709,7 @@
   }
 
   function maybeStartCrossfade(slot) {
-    if (isIOS || slots.length < 2) return;
+    if (!xfadeAllowed()) return;
     if (xfade) return;
     if (!state.playing) return;
     if (!state.crossfade || state.crossfade <= 0) return;
@@ -831,7 +891,7 @@
       try {
         el.src = resolveStreamUrl(track.id, true, slot.token);
       } catch (e) {}
-      el.volume = state.volume;
+      setElVol(slot, state.volume);
       if (pos > 0.3) {
         var onMeta = function () {
           el.removeEventListener('loadedmetadata', onMeta);
@@ -1053,8 +1113,7 @@
 
     /* On iOS: always stay on slot 0. Next track starts on the same element */
     if (isIOS || slots.length < 2) {
-      active = 0;
-      var slotSingle = slots[0];
+      var slotSingle = oldSlot;
       loadSlot(slotSingle, track);
       state.index = i;
       state.position = 0;
@@ -1426,7 +1485,7 @@
       applyFadeVolumes(fadeProgress());
     } else {
       for (var i = 0; i < slots.length; i++) {
-        slots[i].el.volume = nv;
+        setElVol(slots[i], nv);
       }
     }
     emitState(false);
@@ -1477,11 +1536,8 @@
   }
 
   function setCrossfade(sec) {
-    if (isIOS) {
-      state.crossfade = 0;
-    } else {
-      state.crossfade = clamp(num(Number(sec), 0), 0, 12);
-    }
+    state.crossfade = clamp(num(Number(sec), 0), 0, 12);
+    if (iosXfadeOn()) { ensureActx(); resumeActx(); }
     emitState(false);
   }
 
@@ -1603,7 +1659,7 @@
     state.shuffle = !!snap.shuffle;
     state.repeat = REPEAT_MODES.indexOf(snap.repeat) >= 0 ? snap.repeat : 'off';
     state.volume = clamp(num(snap.volume, 0.8), 0, 1);
-    state.crossfade = isIOS ? 0 : clamp(num(snap.crossfade, 0), 0, 12);
+    state.crossfade = clamp(num(snap.crossfade, 0), 0, 12);
     state.index = clamp(Math.round(num(snap.index, 0)), 0, q.length - 1);
     state.playing = false;
     state.buffering = false;
@@ -1631,7 +1687,7 @@
     var pos = Math.max(0, num(snap.position, 0));
     var slot = slots[0];
     var gen = loadSlot(slot, track);
-    slot.el.volume = state.volume;
+    setElVol(slot, state.volume);
     state.duration = num(track.duration, 0);
     state.position = pos;
     slot.lastPos = pos;

@@ -1488,7 +1488,7 @@
       qPills
     ));
 
-    if (!ui.isIOS()) {
+    {
       var currentXfade = (UM.player && UM.player.state && UM.player.state.crossfade) || 0;
       var xfadeVal = h('span', { className: 'um-settings-value', text: currentXfade + 's' });
       var xR = h('input', {
