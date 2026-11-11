@@ -73,6 +73,7 @@
     volMute: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>',
     queue: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zM17 6v8.18c-.31-.11-.65-.18-1-.18-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8h3V6h-5z"/></svg>',
     lyrics: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>',
+    share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>',
     more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
     radio: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.24 6.15C2.51 7.43 2 8.94 2 10.58c0 3.79 2.6 6.99 6.18 7.93l.63-1.9C5.83 15.86 4 13.43 4 10.58c0-1.19.37-2.31 1.01-3.25l-1.77-1.18zm17.52 0l-1.77 1.18C19.63 8.27 20 9.39 20 10.58c0 2.85-1.83 5.28-4.81 6.03l.63 1.9C19.4 17.57 22 14.37 22 10.58c0-1.64-.51-3.15-1.24-4.43zM7.05 8.68C6.39 9.24 6 10.05 6 10.95c0 1.66 1.34 3 3 3 .89 0 1.7-.39 2.26-1.04L7.05 8.68zm9.9 0l-4.21 4.23c.56.65 1.37 1.04 2.26 1.04 1.66 0 3-1.34 3-3 0-.9-.39-1.71-1.05-2.27zM12 2C7.03 2 3 6.03 3 11c0 2.12.74 4.07 1.97 5.61l1.46-1.38C5.46 13.98 5 12.55 5 11c0-3.87 3.13-7 7-7s7 3.13 7 7c0 1.55-.46 2.98-1.43 4.23l1.46 1.38C20.26 15.07 21 13.12 21 11c0-4.97-4.03-9-9-9zm0 7c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>',
@@ -1149,6 +1150,147 @@
     return false;
   }
 
+  /* ------------------------------------------------------------------ *
+   * Share a song: a public link (music.istiaque.cv/s/<id>) that plays it in full
+   * ------------------------------------------------------------------ */
+  var shareLinks = {};
+  function shareTitle(track) {
+    return (track.title || 'A song') + (track.artists ? ' \u00b7 ' + track.artists : '');
+  }
+  function copyLink(url) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(url);
+    } catch (e) {}
+    return new Promise(function (resolve, reject) {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = url; ta.setAttribute('readonly', 'readonly');
+        ta.style.position = 'fixed'; ta.style.left = '-9999px';
+        document.body.appendChild(ta); ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (ok) resolve(); else reject(new Error('copy failed'));
+      } catch (e) { reject(e); }
+    });
+  }
+  function shareDialog(track, url) {
+    var input = h('input', { className: 'um-input', value: url, readonly: 'readonly', style: 'width:100%;' });
+    input.addEventListener('focus', function () { input.select(); });
+    var actions = [{ text: 'Close', onClick: function (close) { close(); } }];
+    if (navigator.share) {
+      actions.push({ text: 'Share', onClick: function (close) {
+        navigator.share({ title: shareTitle(track), text: shareTitle(track), url: url }).then(close, function () {});
+      } });
+    }
+    actions.push({ text: 'Copy link', primary: true, onClick: function (close) {
+      copyLink(url).then(function () { toast('Link copied'); close(); }, function () { input.focus(); input.select(); });
+    } });
+    dialog({
+      title: 'Share song',
+      text: 'Anyone with this link can play "' + (track.title || 'this song') + '" in full, without an account.',
+      body: input,
+      actions: actions
+    });
+  }
+  function deliverShare(track, url) {
+    if (navigator.share && isTouch()) {
+      navigator.share({ title: shareTitle(track), text: shareTitle(track), url: url }).catch(function (err) {
+        if (err && err.name === 'AbortError') return;
+        shareDialog(track, url);   /* the share sheet needs a fresh tap after a slow request */
+      });
+      return;
+    }
+    copyLink(url).then(function () { toast('Link copied'); }, function () { shareDialog(track, url); });
+  }
+  function shareTrack(track) {
+    if (!track || !track.id) return;
+    if (shareLinks[track.id]) { deliverShare(track, shareLinks[track.id]); return; }
+    req('/api/share', {
+      method: 'POST',
+      body: { track: {
+        id: track.id, title: track.title, artists: track.artists, album: track.album,
+        thumb: track.thumb || track.art, duration: track.duration,
+        artistId: track.artistId, albumId: track.albumId
+      } }
+    }).then(function (res) {
+      if (!res || !res.url) throw new Error('No link returned');
+      shareLinks[track.id] = res.url;
+      deliverShare(track, res.url);
+    }).catch(function (err) {
+      toast((err && err.message) || 'Could not create a share link', 'error');
+    });
+  }
+
+  /* iPhone Safari never fires 'contextmenu' on a long press, so emulate it there.
+     Android Chrome already turns a long press into 'contextmenu'. */
+  function onLongPress(el, handler) {
+    if (!isIOS()) return;
+    var timer = null, sx = 0, sy = 0, fired = false;
+    el.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) return;
+      fired = false;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+      timer = setTimeout(function () {
+        timer = null; fired = true;
+        try { if (navigator.vibrate) navigator.vibrate(10); } catch (x) {}
+        handler({ clientX: sx, clientY: sy, preventDefault: function () {}, stopPropagation: function () {} });
+      }, 500);
+    }, { passive: true });
+    el.addEventListener('touchmove', function (e) {
+      if (!timer) return;
+      var t = e.touches[0];
+      if (Math.abs(t.clientX - sx) > 10 || Math.abs(t.clientY - sy) > 10) { clearTimeout(timer); timer = null; }
+    }, { passive: true });
+    el.addEventListener('touchend', function (e) {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (fired) { e.preventDefault(); fired = false; }   /* swallow the click after a long press */
+    });
+    el.addEventListener('touchcancel', function () { if (timer) { clearTimeout(timer); timer = null; } });
+    el.style.webkitTouchCallout = 'none';
+  }
+  function onMenuGesture(el, handler) {
+    el.addEventListener('contextmenu', function (e) { e.preventDefault(); e.stopPropagation(); handler(e); });
+    onLongPress(el, handler);
+  }
+
+  /* Right-click menu for album / artist / playlist cards */
+  function cardMenu(e, kind, item) {
+    var items = [];
+    var path = kind === 'album' ? '/api/album/' : kind === 'playlist' ? '/api/playlist/' : kind === 'artist' ? '/api/artist/' : null;
+    items.push({ text: 'Play', icon: icon('play'), action: function () {
+      if (typeof item.onPlay === 'function') item.onPlay(); else playKind(kind, item);
+    } });
+    if (path && item.id) {
+      var withTracks = function (fn) {
+        req(path + encodeURIComponent(item.id)).then(function (res) {
+          var tracks = ((res && (res.tracks || res.songs)) || []).filter(function (t) { return t && t.id; });
+          if (!tracks.length) { toast('Nothing to add', 'error'); return; }
+          fn(tracks);
+        }).catch(function (err) { toast((err && err.message) || 'Could not load', 'error'); });
+      };
+      items.push({ text: 'Add to queue', icon: icon('queue'), action: function () {
+        withTracks(function (tracks) {
+          if (!UM.player) return;
+          tracks.forEach(function (t) { UM.player.addToQueue(t); });
+          toast('Added ' + tracks.length + ' songs to queue');
+        });
+      } });
+      items.push({ text: 'Play next', icon: icon('play'), action: function () {
+        withTracks(function (tracks) {
+          if (!UM.player) return;
+          for (var i = tracks.length - 1; i >= 0; i--) UM.player.addNext(tracks[i]);
+          toast('Playing next');
+        });
+      } });
+    }
+    if (item.id && (kind === 'album' || kind === 'artist' || kind === 'playlist')) {
+      items.push({ separator: true });
+      items.push({ text: kind === 'artist' ? 'Go to artist' : kind === 'album' ? 'Go to album' : 'Open playlist', icon: icon('note'),
+        action: function () { nav('#/' + kind + '/' + encodeURIComponent(item.id)); } });
+    }
+    menu(e, items);
+  }
+
   function trackRowMenu(e, track, opts) {
     if (e && e.preventDefault) e.preventDefault();
     if (e && e.stopPropagation) e.stopPropagation();
@@ -1191,6 +1333,11 @@
             toast('Starting radio for ' + (track.title || 'track'));
           }
         }
+      },
+      {
+        text: 'Share',
+        icon: icon('share'),
+        action: function () { shareTrack(track); }
       },
       { separator: true },
       { label: 'Add to playlist' },
@@ -1309,6 +1456,13 @@
     });
 
     row.addEventListener('contextmenu', function (e) {
+      trackRowMenu(e, track, {
+        source: source,
+        onRemove: opts.onRemove ? function () { opts.onRemove(idx, track); } : null,
+        removeText: opts.removeText
+      });
+    });
+    onLongPress(row, function (e) {
       trackRowMenu(e, track, {
         source: source,
         onRemove: opts.onRemove ? function () { opts.onRemove(idx, track); } : null,
@@ -1520,7 +1674,7 @@
       text: item.artists || item.author || (isArtist ? 'Artist' : (item.year || ''))
     });
 
-    return h('div', {
+    var cardEl = h('div', {
       className: 'um-card',
       onClick: function () {
         if (typeof item.onClick === 'function') {
@@ -1536,6 +1690,11 @@
         }
       }
     }, artWrap, titleEl, subEl);
+    onMenuGesture(cardEl, function (e) {
+      if (kind === 'track') trackRowMenu(e, item, { source: 'card' });
+      else cardMenu(e, kind, item);
+    });
+    return cardEl;
   }
 
   function mixCard(mix, n) {
@@ -1771,6 +1930,9 @@
 
     trackRow: trackRow,
     trackList: trackList,
+    trackRowMenu: trackRowMenu,
+    shareTrack: shareTrack,
+    onMenuGesture: onMenuGesture,
     card: card,
     mixCard: mixCard,
     stationCard: stationCard,

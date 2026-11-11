@@ -323,6 +323,11 @@
   pbLeft.appendChild(pbArt);
   pbLeft.appendChild(pbMeta);
   pbLeft.appendChild(pbLikeBtn);
+  /* Right-click (or long-press) the player bar song for the same menu as a track row */
+  ui.onMenuGesture(pbLeft, function (e) {
+    var cur = player.current();
+    if (cur) ui.trackRowMenu(e, cur, { source: 'player' });
+  });
 
   /* Phone mini player: swipe the song left = next, right = previous (Spotify-style).
    * Horizontal intent locks after 10px; vertical drags are left alone. */
@@ -653,8 +658,26 @@
       if (cur) core.toggleLike(cur);
     }
   });
+  var fullShareBtn = h('button', {
+    className: 'um-icon-btn',
+    title: 'Share',
+    'aria-label': 'Share song',
+    style: 'min-width:44px;min-height:44px;',
+    html: icon('share'),
+    onClick: function (e) {
+      e.stopPropagation();
+      var cur = player.current();
+      if (cur) ui.shareTrack(cur);
+    }
+  });
   npFullHeaderRow.appendChild(npFullTextStack);
+  npFullHeaderRow.appendChild(fullShareBtn);
   npFullHeaderRow.appendChild(fullLikeBtn);
+  /* Right-click / long-press the big art for the song menu */
+  ui.onMenuGesture(npFullArt, function (e) {
+    var cur = player.current();
+    if (cur) ui.trackRowMenu(e, cur, { source: 'player' });
+  });
 
   /* Sheet Seek Control with elapsed / total time */
   var fullSeek = h('div', {
