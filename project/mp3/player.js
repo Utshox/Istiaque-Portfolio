@@ -290,10 +290,53 @@
     var AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return null;
     try { actx = new AC(); } catch (e) { actx = null; }
+    if (actx) {
+      claimAudioSession();
+      actx.onstatechange = function () {
+        if (actx.state === 'interrupted' && state.playing) pause();
+      };
+    }
     return actx;
   }
   function resumeActx() {
-    if (actx && actx.state !== 'running') { try { actx.resume(); } catch (e) {} }
+    if (actx && actx.state !== 'running' && actx.state !== 'interrupted') { try { actx.resume(); } catch (e) {} }
+  }
+
+  /* Phone interruptions (2026-11-12).
+     iOS: Web Audio on its own gets the 'ambient' audio session, which mixes with
+     calls instead of being interrupted, so music kept playing during a video call.
+     Ask for a real 'playback' session, and pause when iOS reports an interruption.
+     Android: a notification can make the browser pause us without resuming. If a
+     pause did not come from the user, try to resume a few seconds later. */
+  function claimAudioSession() {
+    try {
+      if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback';
+    } catch (e) {}
+  }
+  claimAudioSession();
+  var lastUserPause = 0, lastDeviceChange = 0, sysPause = null;
+  try {
+    if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+      navigator.mediaDevices.addEventListener('devicechange', function () { lastDeviceChange = nowMs(); });
+    }
+  } catch (e) {}
+  function noteSystemPause(slot) {
+    if (isIOS) return;
+    var t = nowMs(), el = slot.el;
+    if (t - lastUserPause < 1500 || t - (slot.loadedAt || 0) < 1500) return;
+    if (el.ended || (el.duration && el.currentTime >= el.duration - 1)) return;
+    if (t - lastDeviceChange < 2000) return;   /* headphones unplugged: stay paused */
+    var mine = sysPause = { at: t };
+    [2500, 6000, 12000].forEach(function (ms) {
+      setTimeout(function () {
+        if (sysPause !== mine || slots[active] !== slot || !slot.el.paused) return;
+        if (lastDeviceChange >= mine.at - 2000 || lastUserPause > mine.at) { sysPause = null; return; }
+        try {
+          var pr = slot.el.play();
+          if (pr && pr.catch) pr.catch(function () {});
+        } catch (e) {}
+      }, ms);
+    });
   }
   /* Must run before a new src is set (the media has to load with CORS). */
   function routeSlot(slot) {
@@ -451,6 +494,7 @@
     if (!canReuse) {
       routeSlot(slot);
       try {
+        slot.loadedAt = nowMs();
         slot.el.src = resolveStreamUrl(track.id, !!opts.bust, slot.token);
       } catch (e) {}
     }
@@ -891,6 +935,7 @@
       slot.prefetchFor = null;
       var curGen = ++slot.loadGen;
       try {
+        slot.loadedAt = nowMs();
         el.src = resolveStreamUrl(track.id, true, slot.token);
       } catch (e) {}
       setElVol(slot, state.volume);
@@ -979,6 +1024,7 @@
     el.addEventListener('playing', function () {
       if (xfade && xfade.into === slot && !xfade.started) startFadeRamp();
       if (slots[active] !== slot) return;
+      sysPause = null;
       state.playing = true;
       state.buffering = false;
       state.needsGesture = false;
@@ -994,6 +1040,7 @@
       state.playing = false;
       state.buffering = false;
       emitState(false);
+      noteSystemPause(slot);
     });
 
     el.addEventListener('waiting', function () {
@@ -1391,6 +1438,8 @@
   }
 
   function play() {
+    sysPause = null;
+    claimAudioSession();
     if (!state.queue.length) return;
     if (state.index < 0) {
       startIndex(0, {});
@@ -1420,6 +1469,8 @@
   }
 
   function pause() {
+    lastUserPause = nowMs();
+    sysPause = null;
     continuationGen++;
     state.buffering = false;
     if (xfade && !xfade.paused) {
@@ -1553,6 +1604,8 @@
   }
 
   function stop() {
+    lastUserPause = nowMs();
+    sysPause = null;
     queueGen++;
     continuationGen++;
     failedIds.clear();
