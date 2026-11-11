@@ -1256,7 +1256,7 @@
   /* Right-click menu for album / artist / playlist cards */
   function cardMenu(e, kind, item) {
     var items = [];
-    var path = kind === 'album' ? '/api/album/' : kind === 'playlist' ? '/api/playlist/' : kind === 'artist' ? '/api/artist/' : null;
+    var path = kind === 'album' ? '/api/album/' : kind === 'playlist' ? '/api/playlist/' : kind === 'artist' ? '/api/artist/' : kind === 'mix' ? '/api/mix/' : null;
     items.push({ text: 'Play', icon: icon('play'), action: function () {
       if (typeof item.onPlay === 'function') item.onPlay(); else playKind(kind, item);
     } });
@@ -1747,7 +1747,7 @@
       }
     }));
 
-    return h('div', {
+    var mixEl = h('div', {
       className: 'um-card um-card--mix',
       onClick: function () { nav('#/mix/' + encodeURIComponent(mix.id)); }
     },
@@ -1755,6 +1755,8 @@
       h('div', { className: 'um-card-title', text: mix.title || 'Daily Mix' }),
       h('div', { className: 'um-card-sub', text: mix.subtitle || 'Personalized mix' })
     );
+    onMenuGesture(mixEl, function (e) { cardMenu(e, 'mix', mix); });
+    return mixEl;
   }
 
   function playStationDirect(st) {
