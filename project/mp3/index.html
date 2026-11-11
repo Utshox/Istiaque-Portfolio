@@ -5,6 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>UTSHOW Music</title>
   <meta name="description" content="UTSHOW Music — personal music player for YouTube Music." />
+  <script>
+    /* 2026-11-12: the app moved to music.istiaque.cv. The old address forwards there and
+       hands over the login (in the #fragment, which never reaches a server), so nobody
+       has to sign in again. The new address stores it and clears the fragment at once. */
+    (function () {
+      var NEW = 'https://music.istiaque.cv/';
+      try {
+        var h = location.hash || '';
+        if (/^(www\.)?istiaque\.cv$/.test(location.hostname)) {
+          var tok = localStorage.getItem('um.token') || '';
+          var usr = localStorage.getItem('um.user') || '';
+          var to = h && h !== '#' ? h : '#/home';
+          location.replace(NEW + (tok
+            ? '#/handoff?t=' + encodeURIComponent(tok) + '&u=' + encodeURIComponent(usr) + '&to=' + encodeURIComponent(to)
+            : to));
+          return;
+        }
+        if (h.indexOf('#/handoff?') === 0) {
+          var q = new URLSearchParams(h.slice('#/handoff?'.length));
+          if (q.get('t') && !localStorage.getItem('um.token')) {
+            localStorage.setItem('um.token', q.get('t'));
+            if (q.get('u')) localStorage.setItem('um.user', q.get('u'));
+          }
+          var dest = q.get('to') || '#/home';
+          history.replaceState(null, '', location.pathname + (dest.charAt(0) === '#' ? dest : '#/home'));
+        }
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- Theme / PWA -->
   <meta name="theme-color" content="#050C1C" />
