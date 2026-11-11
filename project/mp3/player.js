@@ -75,6 +75,8 @@
   function getApiBase() {
     try {
       var stored = localStorage.getItem('um.apiBase');
+      // 2026-11-12: the server moved from GCP to Oracle; drop the old saved address.
+      if (stored && /35-208-88-166\.sslip\.io/.test(stored)) { localStorage.removeItem('um.apiBase'); stored = null; }
       if (stored != null && stored !== '') return stored.replace(/\/+$/, '');
     } catch (e) {}
     if (window.UM_CONFIG && window.UM_CONFIG.apiBase) {
